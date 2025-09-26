@@ -4,7 +4,7 @@ const token = localStorage.getItem("token");
 const accountName = localStorage.getItem("accountName");
 
 const initialState = {
-    // token이 존재하면 
+    // token이 존재하면 true, 없으면 false
     isAuthenticated : !!token, 
     token : token,
     accountName : accountName
