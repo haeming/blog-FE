@@ -1,9 +1,13 @@
 import {createSlice} from "@reduxjs/toolkit";
 
+const token = localStorage.getItem("token");
+const accountName = localStorage.getItem("accountName");
+
 const initialState = {
-    isAuthenticated : false,
-    token : null,
-    admin : null
+    // token이 존재하면 
+    isAuthenticated : !!token, 
+    token : token,
+    accountName : accountName
 };
 
 export const authSlice = createSlice({
@@ -11,15 +15,15 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         loginAction: (state, action) => {
-            const { token, admin } = action.payload;
+            const { token, accountName } = action.payload;
             state.isAuthenticated = true;
             state.token = token;
-            state.admin = admin;
+            state.accountName = accountName;
         },
         logoutAction: (state) => {
             state.isAuthenticated = false;
             state.token = null;
-            state.admin = null;
+            state.accountName = null;
         }
     }
 });
