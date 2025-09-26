@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <title>HaemStory</title>
     <style>
+
       html, body, #root {
         margin: 0;
         padding: 0;
@@ -21,6 +22,22 @@
         width: 100%;
         background-color: #f9fafb;
       }
+
+      /* 데스크탑 */
+      @media (min-width: 426px) {
+        html, body, #root {
+          min-width: 1240px;
+          margin: 0 auto;
+        }
+      }
+
+      /* 모바일 */
+      @media (max-width: 425px) {
+        html, body, #root {
+          min-width: 100%;
+        }
+      }
+
     </style>
   </head>
   <body>
