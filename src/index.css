@@ -4,4 +4,10 @@
   --color-custom-white: #fefefe;
   --color-custom-gray: #f9fafb;
   --color-custom-blue: #5aa1f6;
+  --color-custom-purple: #b25cd5;
+
+  /* 폰트 사이즈 커스텀 */
+  --text-tiny: 0.75rem;
+  --text-topmenu: 1rem;
+  --text-xxl: 2rem;
 }
