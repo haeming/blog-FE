@@ -1,8 +1,15 @@
 import usePageService from "../commons/hooks/usePageService.js";
+import {useDispatch} from "react-redux";
+import {logout} from "../api/auth.js";
 
 export default function TopBar(){
 
     const pageService = usePageService();
+    const dispatch = useDispatch();
+
+    const handleLogout = () => {
+        dispatch(logout());
+    }
 
     return(
         <div className="top-0 z-50">
@@ -19,7 +26,7 @@ export default function TopBar(){
                     <span className="cursor-pointer hover:text-custom-purple">COMMENTS</span>
                 </div>
                 <div className="flex">
-                    <span className="cursor-pointer hover:text-custom-purple">Logout</span>
+                    <span className="cursor-pointer hover:text-custom-purple" onClick={handleLogout}>Logout</span>
                 </div>
             </div>
         </div>
