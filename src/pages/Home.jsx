@@ -1,7 +1,7 @@
 export default function Home(){
     return(
         <>
-            <span>안녕</span>
+            홈화면
         </>
     )
 }

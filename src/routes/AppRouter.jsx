@@ -2,6 +2,7 @@ import {Route, Routes} from "react-router-dom";
 import {useSelector} from "react-redux";
 import Home from "../pages/Home.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
+import Layout from "../components/Layout.jsx";
 
 export function AppRouter(){
 
@@ -11,7 +12,9 @@ export function AppRouter(){
         <Routes>
             <Route path="/" element={
                 authInfo && authInfo.token ? (
-                    <Home/>
+                    <Layout>
+                        <Home/>
+                    </Layout>
                 ) : (
                     <LoginPage/>
                 )

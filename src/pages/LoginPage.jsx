@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Eye, EyeOff, Lock, UserRound } from "lucide-react";
 import useEnterSubmit from "../commons/hooks/useEnterSubmit";
+import { useDispatch } from "react-redux";
+import { login } from "../api/auth";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -8,6 +10,8 @@ export default function LoginPage() {
         accountName: '',
         password: ''
     });
+
+    const dispatch = useDispatch();
 
     const handleInputChange = (e) => {
         setFormData({
@@ -18,6 +22,7 @@ export default function LoginPage() {
 
     const handleSubmit = () => {
         console.log('로그인 시도:', formData);
+        dispatch(login(formData));
     };
 
     const handleKeyDown = useEnterSubmit(handleSubmit);
