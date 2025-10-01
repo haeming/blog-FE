@@ -12,5 +12,9 @@ export default function usePageService(){
         navigate("/");
     }
 
-    return { goToBack, goToHome };
+    const goToCategory = () => {
+        navigate("/category");
+    }
+
+    return { goToBack, goToHome, goToCategory };
 }

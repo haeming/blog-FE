@@ -1,4 +1,9 @@
+import usePageService from "../commons/hooks/usePageService"
+
 export default function Home(){
+
+    const pageService = usePageService();
+
     return(
         <>
             <div className="min-h-screen bg-neutral-50">
@@ -13,11 +18,6 @@ export default function Home(){
                                 </h1>
                                 <p className="text-neutral-600 mt-3 text-lg">오늘도 좋은 하루 되세요!</p>
                             </div>
-                            {/*<div className="hidden md:block">*/}
-                            {/*    <div className="w-20 h-20 rounded-xl flex items-center justify-center text-4xl">*/}
-                            {/*        ✨*/}
-                            {/*    </div>*/}
-                            {/*</div>*/}
                         </div>
                     </div>
 
@@ -66,7 +66,8 @@ export default function Home(){
                             <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">✍️</div>
                             <div className="font-semibold text-lg">새 글 작성</div>
                         </button>
-                        <button className="bg-custom-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 rounded-2xl p-6 transition-all group cursor-pointer">
+                        <button className="bg-custom-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 rounded-2xl p-6 transition-all group cursor-pointer"
+                            onClick={pageService.goToCategory}>
                             <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">📁</div>
                             <div className="font-semibold text-lg">카테고리 관리</div>
                         </button>

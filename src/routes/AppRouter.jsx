@@ -3,6 +3,7 @@ import {useSelector} from "react-redux";
 import Home from "../pages/Home.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
 import Layout from "../components/Layout.jsx";
+import CategoryManagement from "../pages/CategoryManagement.jsx";
 
 export function AppRouter(){
 
@@ -10,15 +11,14 @@ export function AppRouter(){
 
     return(
         <Routes>
-            <Route path="/" element={
-                authInfo && authInfo.token ? (
-                    <Layout>
-                        <Home/>
-                    </Layout>
-                ) : (
-                    <LoginPage/>
-                )
-            } />
+            {authInfo && authInfo.token ? (
+                <Route element={<Layout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/category" element={<CategoryManagement />} />
+                </Route>
+            ) : (
+                <Route path="*" element={<LoginPage />} />
+            )}
         </Routes>
     )
 }
