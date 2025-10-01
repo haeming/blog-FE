@@ -54,7 +54,7 @@ export default function CategoryManagement(){
                 mode="create"
                 onSubmit={handleCreate}
             />
-  
+
             <div className="rounded-lg flex items-center justify-end space-x-2 mt-10">
                 <span className="text-sm text-custom-gray2">총 카테고리 개수</span>
                 <span className="text-custom-gray3 font-bold">{count}</span>
