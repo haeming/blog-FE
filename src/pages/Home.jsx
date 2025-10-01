@@ -64,6 +64,7 @@ export default function Home(){
                         <button className="bg-custom-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 rounded-2xl p-6 transition-all group cursor-pointer"
                             onClick={pageService.goToCategory}>
                             <FolderClosed className="w-8 h-8 text-custom-purple2 inline align-middle" />
+                            {/* <img src="/icons/directory1.png" className="w-8 h-8 text-custom-purple2 inline align-middle" alt="directory"/> */}
                             <div className="font-semibold text-lg">카테고리 관리</div>
                         </button>
                         <button className="bg-custom-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 rounded-2xl p-6 transition-all group cursor-pointer">
