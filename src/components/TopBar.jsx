@@ -13,7 +13,7 @@ export default function TopBar() {
     }
 
     return (
-        <div className="top-0 z-50 bg-white border-b border-neutral-200">
+        <div className="top-0 z-50 bg-white">
             <div className="mx-auto flex items-center justify-between p-4">
                 {/* 로고 */}
                 <div className="flex flex-col items-center justify-center cursor-pointer"
