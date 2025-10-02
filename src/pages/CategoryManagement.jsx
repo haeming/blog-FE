@@ -1,10 +1,24 @@
 import { ImagePlus, Plus } from "lucide-react";
 import {useEffect, useRef, useState} from "react";
+import useCategory from "../api/category.js";
 
 export default function CategoryManagement(){
 
     const fileInputRef = useRef(null);
     const [preview, setPreview] = useState(null);
+    const [count, setCount] = useState();
+
+    const category = useCategory();
+
+    const getCategoryCount = async() => {
+        try {
+            const res = await category.categoryCount();
+            setCount(res.count ?? 0);
+            console.log(res);
+        } catch (error){
+            console.error(error);
+        }
+    }
 
     const handleClick = () => {
         fileInputRef.current?.click();
@@ -17,6 +31,10 @@ export default function CategoryManagement(){
             setPreview(imageUrl);
         }
     }
+
+    useEffect(() => {
+        getCategoryCount();
+    }, []);
 
     useEffect(() => {
         return() => {
@@ -78,7 +96,7 @@ export default function CategoryManagement(){
 
             <div className="rounded-lg flex items-center justify-end space-x-2 mt-10">
                 <span className="text-sm text-custom-gray2">총 카테고리 개수</span>
-                <span className="text-custom-gray3 font-bold">0</span>
+                <span className="text-custom-gray3 font-bold">{count}</span>
             </div>
 
             <div className="shadow-md border border-custom-gray bg-custom-whitegray rounded-lg mb-10">
