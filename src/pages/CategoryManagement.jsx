@@ -117,8 +117,6 @@ export default function CategoryManagement(){
                     </tbody>
                 </table>
             </div>
-
-
         </>
     )
 }
