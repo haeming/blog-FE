@@ -32,5 +32,4 @@ export default function useCategory(){
 
     return useMemo(() => ({categoryCount, createCategory, updateCategory, deleteCategory, getCategoryList}),
     [categoryCount, createCategory, updateCategory, deleteCategory, getCategoryList])
-
 }
