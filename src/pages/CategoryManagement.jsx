@@ -58,20 +58,25 @@ export default function CategoryManagement(){
                 <span className="text-custom-gray3 font-bold">{count}</span>
             </div>
 
-            <div className="shadow-md border border-custom-gray bg-custom-whitegray rounded-lg mb-10">
-                <table className="w-full text-sm text-center m-3">
+            <div className="shadow-md border text-center border-custom-gray bg-custom-whitegray rounded-lg mb-10">
+                <table className="w-full text-sm m-3">
                     <thead>
                     <tr>
-                        <th>이미지</th>
-                        <th>카테고리명</th>
-                        <th>게시글 수</th>
+                        <th className="w-1/5">이미지</th>
+                        <th className="w-2/5">카테고리명</th>
+                        <th className="w-1/5">게시글 수</th>
+                        <th className="w-1/5">관리</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td>이미지</td>
-                        <td>JPA</td>
-                        <td>5</td>
+                        <td className="w-1/5">이미지1111111111111111</td>
+                        <td className="w-2/5">JPA111111111111111</td>
+                        <td className="w-1/5">511111111111111111</td>
+                        <td className="w-1/5">
+                            <button>수정</button>
+                            <button>삭제</button>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
