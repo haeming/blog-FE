@@ -28,8 +28,6 @@ export default function useCategory(){
         return await request("delete", `/api/admin/categories/${id}`, null, config)
     },[])
 
-
-
     return useMemo(() => ({categoryCount, createCategory, updateCategory, deleteCategory, getCategoryList}),
     [categoryCount, createCategory, updateCategory, deleteCategory, getCategoryList])
 }
