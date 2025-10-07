@@ -1,6 +1,4 @@
 import {useCallback, useMemo} from "react";
-import axios from "axios";
-import baseURL from "../config/apiBaseUrl.js";
 import getAuthHeaders from "../commons/utils/authHeaders.js";
 import {request} from "./request.js";
 
