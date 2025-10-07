@@ -4,7 +4,6 @@ import useCategory from "../api/category.js";
 import CategoryForm from "../components/category/CategoryForm.jsx";
 
 export default function CategoryManagement(){
-
     const [count, setCount] = useState();
 
     const category = useCategory();
@@ -32,6 +31,14 @@ export default function CategoryManagement(){
         getCategoryCount();
     }, []);
 
+    useEffect(() => {
+        return() => {
+            if(preview){
+                URL.revokeObjectURL(preview);
+            };
+        };
+    }, [preview]);
+
     return(
         <>
             <div className="flex items-center justify-between my-5">
@@ -52,7 +59,7 @@ export default function CategoryManagement(){
                 mode="create"
                 onSubmit={handleCreate}
             />
-
+  
             <div className="rounded-lg flex items-center justify-end space-x-2 mt-10">
                 <span className="text-sm text-custom-gray2">총 카테고리 개수</span>
                 <span className="text-custom-gray3 font-bold">{count}</span>
