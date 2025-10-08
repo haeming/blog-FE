@@ -13,17 +13,17 @@ export default function CategoryManagement(){
 
     const getCategoryCount = async() => {
         try {
-            const res = await category.categoryCount();
-            setCount(res.count ?? 0);
-            console.log(res);
+            const count = await category.categoryCount();
+            setCount(count ?? 0);
+            console.log(count);
         } catch (error){
             console.error(error);
         }
     }
 
-    const handleCreate = async (data) => {
+    const handleCreate = async (data, file) => {
         try {
-            await category.createCategory(data.categoryName);
+            await category.createCategory(data.categoryName, file);
             await getCategoryCount(); // 등록 후 카운트 갱신
         } catch (err) {
             console.error(err);
@@ -54,7 +54,7 @@ export default function CategoryManagement(){
                 mode="create"
                 onSubmit={handleCreate}
             />
-  
+
             <div className="rounded-lg flex items-center justify-end space-x-2 mt-10">
                 <span className="text-sm text-custom-gray2">총 카테고리 개수</span>
                 <span className="text-custom-gray3 font-bold">{count}</span>
