@@ -14,7 +14,7 @@ export default function CategoryManagement(){
     const getCategoryCount = async() => {
         try {
             const count = await category.categoryCount();
-            setCount(count ?? 0);
+            setCount(count.result ?? 0);
             console.log(count);
         } catch (error){
             console.error(error);

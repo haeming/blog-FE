@@ -39,13 +39,7 @@ export default function CategoryForm({
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        onSubmit({
-            categoryName: name,
-            imageFile: file, // 새 업로드 파일 (없으면 null)
-            imageUrl: file ? preview : initialData.imageUrl,
-            // 파일이 없을 경우 → 기존 이미지 그대로 유지
-        });
+        onSubmit({categoryName: name}, file);
     };
 
     return (

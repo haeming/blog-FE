@@ -1,3 +1,5 @@
+import baseURL from "../../config/apiBaseUrl.js";
+
 export default function CategoryList({categories}){
 
     if(!categories || categories.length === 0){
@@ -29,9 +31,13 @@ export default function CategoryList({categories}){
                     <tbody>
                     {categories.map((c, index) => (
                         <tr key={index}>
-                            <td className="w-1/5">이미지</td>
+                            <td className="w-1/5">
+                                <img
+                                    src={`${baseURL}${c.imageUrl}`}
+                                />
+                            </td>
                             <td className="w-2/5">{c.categoryName}</td>
-                            <td className="w-1/5">4</td>
+                            <td className="w-1/5">{c.postCount}</td>
                             <td className="w-1/5 space-x-2">
                                 <button className="text-blue-500 hover:underline cursor-pointer">수정</button>
                                 <button className="text-red-500 hover:underline cursor-pointer">삭제</button>
