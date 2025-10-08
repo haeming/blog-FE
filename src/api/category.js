@@ -14,8 +14,21 @@ export default function useCategory(){
         return await request("get", "/api/admin/categories", null, config)
     }, [])
 
-    const createCategory = useCallback(async(categoryName) => {
-        return await request("post", "/api/admin/categories", {categoryName}, config)
+    const createCategory = useCallback(async(categoryName, file) => {
+        const formData = new FormData();
+        formData.append("data", new Blob([JSON.stringify({categoryName})],{
+            type: "application/json"
+        }));
+        if(file){
+            formData.append("file", file);
+        }
+        return await request("post", "/api/admin/categories", formData, {
+            ...config,
+            header: {
+                ...config.headers,
+                "Content-Type": "multipart/form-data",
+            },
+        });
     }, [])
 
     const updateCategory = useCallback(async(id, categoryName) => {

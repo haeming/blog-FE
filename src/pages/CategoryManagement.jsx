@@ -13,17 +13,17 @@ export default function CategoryManagement(){
 
     const getCategoryCount = async() => {
         try {
-            const res = await category.categoryCount();
-            setCount(res.count ?? 0);
-            console.log(res);
+            const count = await category.categoryCount();
+            setCount(count ?? 0);
+            console.log(count);
         } catch (error){
             console.error(error);
         }
     }
 
-    const handleCreate = async (data) => {
+    const handleCreate = async (data, file) => {
         try {
-            await category.createCategory(data.categoryName);
+            await category.createCategory(data.categoryName, file);
             await getCategoryCount(); // 등록 후 카운트 갱신
         } catch (err) {
             console.error(err);
