@@ -1,6 +1,20 @@
 import baseURL from "../../config/apiBaseUrl.js";
+import {Image} from "lucide-react";
+import useCategory from "../../api/category.js";
 
-export default function CategoryList({categories}){
+export default function CategoryList({categories, categoryData, categoryCount}){
+
+    const category = useCategory();
+    const handleDelete = async(id) => {
+        try {
+            await category.deleteCategory(id);
+            await categoryData();
+            await categoryCount();
+            console.log("delete시도 id=",id);
+        } catch (err){
+            console.error("categoryDeleteError:", err)
+        }
+    }
 
     if(!categories || categories.length === 0){
         console.log("gg",categories)
@@ -16,31 +30,36 @@ export default function CategoryList({categories}){
 
     return (
         <>
-
             <div
                 className="shadow-md border text-center border-custom-gray bg-custom-whitegray rounded-lg mb-10">
                 <table className="w-full text-sm m-3">
                     <thead>
                     <tr>
-                        <th className="w-1/5">이미지</th>
-                        <th className="w-2/5">카테고리명</th>
-                        <th className="w-1/5">게시글 수</th>
-                        <th className="w-1/5">관리</th>
+                        <th className="w-1/10">이미지</th>
+                        <th className="w-5/10">카테고리명</th>
+                        <th className="w-2/10">게시글 수</th>
+                        <th className="w-2/10">관리</th>
                     </tr>
                     </thead>
                     <tbody>
                     {categories.map((c, index) => (
                         <tr key={index}>
-                            <td className="w-1/5">
-                                <img
-                                    src={`${baseURL}${c.imageUrl}`}
-                                />
+                            <td className="w-1/10">
+                                {c.imageUrl ? (
+                                    <img
+                                        src={`${baseURL}${c.imageUrl}`}
+                                        className="mx-auto block rounded-full w-13 h-13"
+                                    />
+                                ):(
+                                    <Image className="mx-auto block w-13 h-13 text-custom-gray2"/>
+                                )}
+
                             </td>
-                            <td className="w-2/5">{c.categoryName}</td>
-                            <td className="w-1/5">{c.postCount}</td>
-                            <td className="w-1/5 space-x-2">
+                            <td className="w-5/10">{c.categoryName}</td>
+                            <td className="w-2/10">{c.postCount}</td>
+                            <td className="w-2/10 space-x-2">
                                 <button className="text-blue-500 hover:underline cursor-pointer">수정</button>
-                                <button className="text-red-500 hover:underline cursor-pointer">삭제</button>
+                                <button className="text-red-500 hover:underline cursor-pointer" onClick={() => handleDelete(c.id)}>삭제</button>
                             </td>
                         </tr>
                     ))}

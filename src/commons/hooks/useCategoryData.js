@@ -32,5 +32,5 @@ export default function useCategoryData (){
     },[])
 
 
-    return {categories}
+    return {categories, categoryData};
 }

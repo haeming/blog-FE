@@ -7,8 +7,7 @@ import useCategoryData from "../commons/hooks/useCategoryData.js";
 
 export default function CategoryManagement(){
     const [count, setCount] = useState();
-    const {categories} = useCategoryData();
-
+    const {categories, categoryData } = useCategoryData();
     const category = useCategory();
 
     const getCategoryCount = async() => {
@@ -25,6 +24,7 @@ export default function CategoryManagement(){
         try {
             await category.createCategory(data.categoryName, file);
             await getCategoryCount(); // 등록 후 카운트 갱신
+            await categoryData();
         } catch (err) {
             console.error(err);
         }
@@ -60,7 +60,7 @@ export default function CategoryManagement(){
                 <span className="text-custom-gray3 font-bold">{count}</span>
             </div>
 
-            <CategoryList categories={categories} />
+            <CategoryList categories={categories} categoryData={categoryData} categoryCount={getCategoryCount} />
         </>
     )
 }
