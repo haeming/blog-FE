@@ -8,7 +8,20 @@ export default function useCategoryData (){
     const categoryData = async () => {
         try {
             const res = await categoryApi.getCategoryList();
-            setCategories(res);
+            const categoryList = res.result;
+            const categoriesWithCount = await Promise.all(
+                categoryList.map(async (category) => {
+                    try {
+                        const countRes = await categoryApi.getPostCountByCategoryId(category.id);
+                        const postCount = countRes.result;
+                        return { ...category, postCount };
+                    } catch (error) {
+                        console.error("postCount Error", error);
+                        return { ...category, postCount: 0 };
+                    }
+                })
+            );
+            setCategories(categoriesWithCount);
         } catch (error){
             console.error(error);
         }
@@ -19,5 +32,5 @@ export default function useCategoryData (){
     },[])
 
 
-    return {categories}
+    return {categories, categoryData};
 }
