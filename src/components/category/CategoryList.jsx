@@ -1,6 +1,6 @@
 import baseURL from "../../config/apiBaseUrl.js";
 import {Image} from "lucide-react";
-import useCategory from "../../api/category.js";
+import useCategory from "../../api/categoryApi.js";
 import {useState} from "react";
 import ConfirmModal from "../../commons/modals/ConfirmModal.jsx";
 

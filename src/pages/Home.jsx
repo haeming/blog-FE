@@ -1,9 +1,25 @@
 import usePageService from "../commons/hooks/useNavigationService"
 import { Grape, FolderClosed, MessageSquareMore, PencilLine, Newspaper, MessageSquareHeart, UsersRound, ArrowRight } from 'lucide-react';
+import { postService } from "../services/postService";
+import { useEffect, useState } from "react";
 
 export default function Home(){
 
     const pageService = usePageService();
+    const [postCount, setPostCount] = useState(0);
+    
+    useEffect(() => {
+        const getPostCount = async () => {
+            try {
+                const count = await postService.postCount();
+                setPostCount(count ?? 0);
+            } catch (error){
+                console.error("게시글 불러오기 에러", error);
+            }
+        };
+        
+        getPostCount();
+    }, [])
 
     return(
         <>
@@ -28,7 +44,7 @@ export default function Home(){
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-neutral-500 text-sm font-medium">전체 글</p>
-                                    <p className="text-3xl font-bold mt-2 text-neutral-900">24</p>
+                                    <p className="text-3xl font-bold mt-2 text-neutral-900">{postCount}</p>
                                 </div>
                                 <Newspaper className="w-10 h-10 text-custom-purple"/>
                             </div>

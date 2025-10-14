@@ -1,4 +1,4 @@
-import useCategory from "../../api/category.js";
+import useCategory from "../../api/categoryApi.js";
 import {useEffect, useState} from "react";
 
 export default function useCategoryData (){
