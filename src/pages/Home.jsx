@@ -1,4 +1,4 @@
-import usePageService from "../commons/hooks/usePageService"
+import usePageService from "../commons/hooks/useNavigationService"
 import { Grape, FolderClosed, MessageSquareMore, PencilLine, Newspaper, MessageSquareHeart, UsersRound, ArrowRight } from 'lucide-react';
 
 export default function Home(){

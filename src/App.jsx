@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { adminApi } from './api/adminApi.js';
 import { loginAction } from './store/authSlice.js';
-import usePageService from './commons/hooks/usePageService.js';
+import usePageService from './commons/hooks/useNavigationService.js';
 
 function App() {
 
