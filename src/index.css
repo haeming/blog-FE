@@ -21,3 +21,8 @@
   --text-xxl: 2rem;
   --text-title: 1.5rem;
 }
+
+/* 스크롤바 숨기기 */
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
