@@ -1,6 +1,6 @@
 import { ImagePlus, Plus } from "lucide-react";
 import {useEffect, useState} from "react";
-import useCategory from "../api/category.js";
+import useCategory from "../api/categoryApi.js";
 import CategoryForm from "../components/category/CategoryForm.jsx";
 import CategoryList from "../components/category/CategoryList.jsx";
 import useCategoryData from "../commons/hooks/useCategoryData.js";
