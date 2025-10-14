@@ -1,5 +1,5 @@
 import { useState } from "react";
-import usePageService from "../commons/hooks/usePageService.js";
+import usePageService from "../commons/hooks/useNavigationService.js";
 import { useDispatch } from "react-redux";
 import { logout } from "../api/auth.js";
 
