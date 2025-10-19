@@ -6,6 +6,9 @@ import 'codemirror/lib/codemirror.css';
 import "@toast-ui/editor/dist/toastui-editor.css";
 import '@toast-ui/editor/dist/i18n/ko-KR';
 import "prismjs/themes/prism.css";
+import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
+import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
+import 'tui-color-picker/dist/tui-color-picker.css';
 import DOMPurify from "dompurify";
 import postApi from "../api/postApi.js";
 
@@ -21,7 +24,7 @@ export default function PostCreate() {
 
     const handleImageInsert = (blob, callback) => {
         const localUrl = URL.createObjectURL(blob);
-        callback(localUrl, ''); // 에디터 안에 즉시 이미지 미리보기 표시
+        callback(localUrl, 'image'); // 에디터 안에 즉시 이미지 미리보기 표시
         setFiles((prev) => [...prev, blob]); // 실제 업로드는 createPost 단계에서 처리
     };
 
@@ -38,8 +41,8 @@ export default function PostCreate() {
         const cleanHTML = DOMPurify.sanitize(html, {
             ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3',
                 'ul', 'ol', 'li', 'code', 'pre', 'blockquote',
-                'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
-            ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class']
+                'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'span'],
+            ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'style']
         });
 
         try {
@@ -292,6 +295,7 @@ export default function PostCreate() {
                             margin: 0.3em 0 !important;
                             line-height: 1.7 !important;
                         }
+                        
                     `}</style>
 
                     <Editor
@@ -301,7 +305,9 @@ export default function PostCreate() {
                         initialEditType="markdown"
                             previewStyle="vertical"
                         useCommandShortcut={true}
-                        plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
+                        plugins={[[codeSyntaxHighlight, { highlighter: Prism }],
+                            colorSyntax,
+                        ]}
                         toolbarItems={[
                             ["heading", "bold", "italic", "strike"],
                             ["hr", "quote"],
@@ -309,6 +315,10 @@ export default function PostCreate() {
                             ["table", "link", "image"],
                             ["code", "codeblock"],
                         ]}
+                        hooks={{
+                            addImageBlobHook: handleImageInsert,
+                        }}
+                        customHTMLSanitizer={(html) => html}
                         initialValue=" "
                         placeholder="내용을 입력하세요..."
                         hideModeSwitch={false}
