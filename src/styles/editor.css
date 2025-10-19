@@ -1,3 +1,6 @@
+/* =========================================================
+   ToastUI Editor (글 작성 화면)
+   ========================================================= */
 .toastui-editor-contents pre {
     background: #1e1e2e !important;
     border-radius: 10px !important;
@@ -87,4 +90,171 @@
     padding-left: 1.5em;
     margin: 1em 0;
     color: #1e293b;
+}
+
+/* =========================================================
+   PostDetail (조회 화면 - VSCode / IntelliJ 중간톤)
+   ========================================================= */
+.toast-viewer-content pre {
+    background: #1e1e2e !important;
+    border-radius: 12px !important;
+    padding: 18px 20px !important;
+    color: #e0e0e0 !important;
+    font-family: "Fira Code", "JetBrains Mono", monospace !important;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    transition: box-shadow 0.2s ease-in-out;
+}
+.toast-viewer-content pre:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.toast-viewer-content pre code {
+    background: transparent !important;
+    color: inherit !important;
+    font-family: inherit !important;
+}
+
+/* 인라인 코드 */
+.toast-viewer-content :not(pre) > code {
+    background: #2f2f3a !important;
+    color: #dcdcaa !important;
+    padding: 3px 6px !important;
+    border-radius: 4px !important;
+    font-family: "JetBrains Mono", "Fira Code", monospace !important;
+    font-size: 0.9rem;
+}
+
+/* 인용문 */
+.toast-viewer-content blockquote {
+    border-left: 4px solid #7c3aed !important;
+    background: rgba(124, 58, 237, 0.08) !important;
+    color: #d4d4d4 !important;
+    padding: 0.8em 1.2em !important;
+    border-radius: 0 8px 8px 0 !important;
+    margin: 1.5em 0 !important;
+}
+
+/* 헤딩 */
+.toast-viewer-content h1 {
+    font-size: 2em;
+    font-weight: 700;
+    color: #6d28d9; /* 보라 유지 */
+    border-bottom: 2px solid #c084fc;
+    padding-bottom: 0.3em;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.toast-viewer-content h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #6d28d9;
+    margin: 1.2em 0 0.5em;
+}
+
+.toast-viewer-content h3 {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #7c3aed;
+    margin: 1em 0 0.5em;
+}
+
+/* 테이블 */
+.toast-viewer-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    font-size: 0.95rem;
+}
+.toast-viewer-content th {
+    background: #2a2a35;
+    color: #6d28d9;
+    padding: 10px;
+    border: 1px solid #3b3b45;
+}
+.toast-viewer-content td {
+    border: 1px solid #3b3b45;
+    padding: 10px;
+    color: #e0e0e0;
+}
+
+/* 이미지 */
+.toast-viewer-content img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    margin: 1.2em 0;
+}
+
+/* 리스트 */
+.toast-viewer-content ul,
+.toast-viewer-content ol {
+    padding-left: 1.5em;
+    margin: 1em 0;
+    color: #e0e0e0;
+}
+
+/* =========================================================
+    Prism Token 색상 - VS Code / IntelliJ 스타일 혼합
+   ========================================================= */
+.toast-viewer-content .token.comment {
+    color: #6a9955 !important;
+    font-style: italic;
+}
+
+.toast-viewer-content .token.keyword {
+    color: #569cd6 !important; /* 파랑 */
+}
+
+.toast-viewer-content .token.string {
+    color: #ce9178 !important; /* 연한 주황/연두 */
+}
+
+.toast-viewer-content .token.function {
+    color: #dcdcaa !important; /* 노랑 */
+}
+
+.toast-viewer-content .token.class-name {
+    color: #4ec9b0 !important; /* 민트 */
+}
+
+.toast-viewer-content .token.number,
+.toast-viewer-content .token.boolean {
+    color: #4fc1ff !important; /* 하늘색 */
+}
+
+.toast-viewer-content .token.operator {
+    color: #c586c0 !important; /* 연보라 */
+}
+
+.toast-viewer-content .token.variable {
+    color: #9cdcfe !important;
+}
+
+.toast-viewer-content .token.constant {
+    color: #d16969 !important;
+}
+
+.toast-viewer-content .token.punctuation {
+    color: #e0e0e0 !important;
+}
+
+/* 강조 */
+.toast-viewer-content .token.bold {
+    font-weight: bold;
+}
+.toast-viewer-content .token.italic {
+    font-style: italic;
+}
+
+/* 스크롤바 */
+.toast-viewer-content pre::-webkit-scrollbar {
+    height: 10px;
+}
+.toast-viewer-content pre::-webkit-scrollbar-thumb {
+    background-color: #4b4b4b;
+    border-radius: 8px;
 }

@@ -1,9 +1,9 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState, useMemo, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
 import Prism from "prismjs";
 import postApi from "../api/postApi.js";
-import {Viewer} from "@toast-ui/react-editor";
-import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight";
 import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 import "prismjs/themes/prism-okaidia.css";
 import "prismjs/components/prism-javascript";
@@ -12,24 +12,89 @@ import "prismjs/components/prism-java";
 import "prismjs/components/prism-json";
 import "../styles/editor.css";
 import ConfirmModal from "../commons/modals/ConfirmModal.jsx";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import usePageService from "../commons/hooks/useNavigationService.js";
+import baseURL from "../config/apiBaseUrl.js";
 
-export default function PostDetail (){
+const renderer = new marked.Renderer();
 
+renderer.code = (code, lang) => {
+    const actualCode =
+        typeof code === "object" && code !== null && "text" in code
+            ? code.text
+            : code;
+
+    const safeCode = typeof actualCode === "string" ? actualCode : String(actualCode || "");
+    const language = Prism.languages[lang] || Prism.languages.javascript;
+    const html = Prism.highlight(safeCode, language, lang);
+
+    return `<pre class="language-${lang}"><code class="language-${lang}">${html}</code></pre>`;
+};
+
+marked.setOptions({
+    renderer,
+    breaks: true,
+});
+
+// marked.setOptions({
+//     highlight: function (code, lang) {
+//         if (Prism.languages[lang]) {
+//             const language = Prism.languages[lang] || Prism.languages.javascript;
+//             return Prism.highlight(code, language, lang);
+//         } else {
+//             return code;
+//         }
+//     },
+//     breaks: true,
+// });
+
+export default function PostDetail() {
     const { id } = useParams();
     const viewerRef = useRef();
     const [postInfo, setPostInfo] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const post = postApi();
-
     const pageService = usePageService();
+
+    useEffect(() => {
+        const getPostInfo = async () => {
+            try {
+                const response = await post.getPost(id);
+                setPostInfo(response.result);
+            } catch (error) {
+                console.error("단일 게시글 조회 오류", error);
+            }
+        };
+        getPostInfo();
+    }, [id]);
+
+    const htmlContent = useMemo(() => {
+        if (!postInfo?.content) return "";
+
+        let content = postInfo.content.replace(
+            /!\[([^\]]*)\]\((\/uploadFiles\/[^\)]+)\)/g,
+            (match, alt, path) => {
+                const fullUrl = `${baseURL}${path}`;
+                const encodedUrl = encodeURI(fullUrl);
+                return `![${alt}](${encodedUrl})`;
+            }
+        );
+
+        const rawHtml = marked.parse(content);
+        return DOMPurify.sanitize(rawHtml);
+    }, [postInfo]);
+
+    useLayoutEffect(() => {
+        if (htmlContent) {
+            Prism.highlightAll();
+        }
+    }, [htmlContent]);
 
     const handleModalOpen = (id) => {
         setSelectedId(id);
         setIsModalOpen(true);
-    }
+    };
 
     const handleDelete = async () => {
         try {
@@ -37,26 +102,10 @@ export default function PostDetail (){
             setIsModalOpen(false);
             toast.success("게시글이 성공적으로 삭제되었습니다.");
             pageService.goToHome();
-        } catch (err){
+        } catch (err) {
             console.error("게시글 삭제 에러", err);
         }
-
-    }
-
-    useEffect(() => {
-        const getPostInfo = async () => {
-            try {
-                const response = await post.getPost(id);
-                console.log(response)
-                const postData = response.result;
-                setPostInfo(postData);
-            } catch (error){
-                console.error("단일 게시글 조회 오류", error);
-            }
-        }
-
-        getPostInfo();
-    }, [id]);
+    };
 
     if (!postInfo) {
         return (
@@ -66,13 +115,11 @@ export default function PostDetail (){
         );
     }
 
-    return(
+    return (
         <>
             <div className="min-h-screen to-slate-100 py-10 px-4">
                 <div className="max-w-5xl mx-auto rounded-2xl p-3">
-                    <h1 className="text-4xl font-bold mb-4">
-                        {postInfo.title}
-                    </h1>
+                    <h1 className="text-4xl font-bold mb-4">{postInfo.title}</h1>
 
                     <div className="flex text-slate-500 text-sm justify-between items-center mb-6">
                         <div>
@@ -89,19 +136,23 @@ export default function PostDetail (){
                             )}
                         </div>
                         <div>
-                            <button className="mx-1 cursor-pointer hover:text-slate-800">수정</button>
-                            <button className="mx-1 cursor-pointer hover:text-slate-800"
-                            onClick={() => handleModalOpen(postInfo.id)}>삭제</button>
+                            <button className="mx-1 cursor-pointer hover:text-slate-800">
+                                수정
+                            </button>
+                            <button
+                                className="mx-1 cursor-pointer hover:text-slate-800"
+                                onClick={() => handleModalOpen(postInfo.id)}
+                            >
+                                삭제
+                            </button>
                         </div>
-
                     </div>
 
-
                     <div className="toast-viewer border-y border-gray-300 py-10">
-                        <Viewer
-                            ref={viewerRef}
-                            initialValue={postInfo.content}
-                            plugins={[[codeSyntaxHighlight, {highlighter: Prism}]]}
+                        <div
+                            key={postInfo?.id}
+                            className="toast-viewer-content"
+                            dangerouslySetInnerHTML={{__html: htmlContent}}
                         />
                     </div>
                 </div>
@@ -114,7 +165,6 @@ export default function PostDetail (){
                 onConfirm={handleDelete}
                 onCancel={() => setIsModalOpen(false)}
             />
-
         </>
-    )
+    );
 }

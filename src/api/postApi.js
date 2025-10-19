@@ -35,5 +35,14 @@ export default function postApi(){
         return await request("delete", `/api/admin/posts/${id}`, null, config);
     }
 
-    return { postCount, createPost, getPost, deletePost };
+    const uploadTempImages = async (files) => {
+        const config = getAuthHeaders();
+        const formData = new FormData();
+
+        files.forEach((file) => formData.append("file", file));
+
+        return await request("post", "/api/admin/posts/temp-image", formData, config);
+    };
+
+    return { postCount, createPost, getPost, deletePost, uploadTempImages };
 }
