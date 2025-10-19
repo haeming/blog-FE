@@ -20,5 +20,9 @@ export default function usePageService(){
         navigate("/post/write")
     }
 
-    return { goToBack, goToHome, goToCategory, goToPostWrite };
+    const goToPostDetail = (id) => {
+        navigate(`/post/${id}`)
+    }
+
+    return { goToBack, goToHome, goToCategory, goToPostWrite, goToPostDetail };
 }
