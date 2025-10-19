@@ -2,20 +2,39 @@ import { useRef, useState } from "react";
 import { Editor } from "@toast-ui/react-editor";
 import Prism from "prismjs";
 import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight";
+import 'codemirror/lib/codemirror.css';
 import "@toast-ui/editor/dist/toastui-editor.css";
+import '@toast-ui/editor/dist/i18n/ko-KR';
 import "prismjs/themes/prism.css";
 import DOMPurify from "dompurify";
+import postApi from "../api/postApi.js";
 
 export default function PostCreate() {
     const editorRef = useRef();
     const [title, setTitle] = useState("");
+    const [categoryId, setCategoryId] = useState("");
     const [tags, setTags] = useState([]);
     const [tagInput, setTagInput] = useState("");
+    const [files, setFiles] = useState([]);
 
-    const handleSave = () => {
+    const { createPost } = postApi();
+
+    const handleImageInsert = (blob, callback) => {
+        const localUrl = URL.createObjectURL(blob);
+        callback(localUrl, ''); // 에디터 안에 즉시 이미지 미리보기 표시
+        setFiles((prev) => [...prev, blob]); // 실제 업로드는 createPost 단계에서 처리
+    };
+
+    const handleSave = async () => {
+        if(!title.trim()){
+            alert("제목을 입력해 주세요.");
+            return;
+        }
+
         const markdown = editorRef.current.getInstance().getMarkdown();
         const html = editorRef.current.getInstance().getHTML();
 
+        // 보안 필터
         const cleanHTML = DOMPurify.sanitize(html, {
             ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3',
                 'ul', 'ol', 'li', 'code', 'pre', 'blockquote',
@@ -23,14 +42,20 @@ export default function PostCreate() {
             ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class']
         });
 
-        console.log({
-            title,
-            tags,
-            markdown,
-            html
-        });
+        try {
+            const postData = {
+                title: title,
+                content: markdown,
+                categoryId: parseInt(categoryId),
+            }
 
-        alert("콘솔에 데이터가 출력되었습니다!");
+            const response = await createPost(postData, files);
+            console.log("게시글 등록 완료", response);
+            alert("게시글 등록이 완료되었습니다!");
+        } catch (error){
+            console.error("게시글 등록 에러: ", error);
+            alert("게시글 등록 중 에러가 발생했습니다.");
+        }
     };
 
     const addTag = (e) => {
@@ -271,9 +296,10 @@ export default function PostCreate() {
 
                     <Editor
                         ref={editorRef}
+                        language="ko-KR"
                         height="600px"
                         initialEditType="markdown"
-                        previewStyle="vertical"
+                            previewStyle="vertical"
                         useCommandShortcut={true}
                         plugins={[[codeSyntaxHighlight, { highlighter: Prism }]]}
                         toolbarItems={[
@@ -283,6 +309,7 @@ export default function PostCreate() {
                             ["table", "link", "image"],
                             ["code", "codeblock"],
                         ]}
+                        initialValue=" "
                         placeholder="내용을 입력하세요..."
                         hideModeSwitch={false}
                     />

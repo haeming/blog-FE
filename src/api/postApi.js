@@ -7,5 +7,23 @@ export default function postApi(){
         return await request("get", "/api/admin/posts/count", null, config);
     }
 
-    return { postCount };
+    const createPost = async(postData, files) => {
+        const config = getAuthHeaders();
+        const formData = new FormData();
+        const { title, content, categoryId } = postData;
+        formData.append(
+            "data",
+            new Blob([JSON.stringify({ title, content, categoryId })], { type: "application/json" })
+        );
+
+        if(files && files.length > 0){
+            files.forEach(file => {
+                formData.append("file", file);
+            })
+        }
+
+        return await request("post", "/api/admin/posts", formData, config);
+    }
+
+    return { postCount, createPost };
 }
