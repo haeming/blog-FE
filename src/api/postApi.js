@@ -7,6 +7,11 @@ export default function postApi(){
         return await request("get", "/api/admin/posts/count", null, config);
     }
 
+    const getPost = async (id) => {
+        const config = getAuthHeaders();
+        return await request("get", `/api/admin/posts/${id}`, null, config);
+    }
+
     const createPost = async(postData, files) => {
         const config = getAuthHeaders();
         const formData = new FormData();
@@ -25,5 +30,5 @@ export default function postApi(){
         return await request("post", "/api/admin/posts", formData, config);
     }
 
-    return { postCount, createPost };
+    return { postCount, createPost, getPost };
 }
