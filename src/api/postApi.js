@@ -30,5 +30,10 @@ export default function postApi(){
         return await request("post", "/api/admin/posts", formData, config);
     }
 
-    return { postCount, createPost, getPost };
+    const deletePost = async(id) => {
+        const config = getAuthHeaders();
+        return await request("delete", `/api/admin/posts/${id}`, null, config);
+    }
+
+    return { postCount, createPost, getPost, deletePost };
 }
