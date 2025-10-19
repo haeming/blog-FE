@@ -73,7 +73,8 @@ export default function Home(){
 
                     {/* 빠른 액션 버튼 */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <button className="bg-custom-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 rounded-2xl p-6 transition-all group cursor-pointer">
+                        <button className="bg-custom-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 rounded-2xl p-6 transition-all group cursor-pointer"
+                            onClick={pageService.goToPostWrite}>
                             <PencilLine className="w-8 h-8 text-custom-purple2 inline align-middle" />
                             <div className="font-semibold text-lg">새 글 작성</div>
                         </button>
