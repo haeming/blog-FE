@@ -4,6 +4,7 @@ import Home from "../pages/Home.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
 import Layout from "../components/Layout.jsx";
 import CategoryManagement from "../pages/CategoryManagement.jsx";
+import PostCreate from "../pages/PostCreate.jsx";
 
 export function AppRouter(){
 
@@ -15,6 +16,7 @@ export function AppRouter(){
                 <Route element={<Layout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/category" element={<CategoryManagement />} />
+                    <Route path="/post/write" element={<PostCreate/>} />
                 </Route>
             ) : (
                 <Route path="*" element={<LoginPage />} />

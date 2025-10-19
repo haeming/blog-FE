@@ -16,5 +16,9 @@ export default function usePageService(){
         navigate("/category");
     }
 
-    return { goToBack, goToHome, goToCategory };
+    const goToPostWrite = () => {
+        navigate("/post/write")
+    }
+
+    return { goToBack, goToHome, goToCategory, goToPostWrite };
 }
