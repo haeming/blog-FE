@@ -10,7 +10,7 @@ export default function Layout() {
         </div>
       </header>
 
-      <main className="max-w-[1024px] mx-auto px-4">
+      <main className="max-w-[820px] mx-auto">
         <Outlet/>
       </main>
     </div>
