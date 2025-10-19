@@ -26,7 +26,7 @@ export default function CategoryForm({
 
     const handleCancel = () => {
         setName("");
-        setPreview("")
+        setPreview("");
     }
 
     useEffect(() => {
@@ -40,6 +40,8 @@ export default function CategoryForm({
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit({categoryName: name}, file);
+        setName("");
+        setPreview("");
     };
 
     return (

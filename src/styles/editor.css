@@ -1,0 +1,13 @@
+.toastui-editor-contents pre {
+    background: #1e1e2e !important;
+    border-radius: 10px !important;
+    color: #f8f8f2 !important;
+    padding: 16px !important;
+}
+
+.toastui-editor-contents pre code {
+    background: transparent !important;
+    color: inherit !important;
+    font-family: "Fira Code", "Consolas", monospace !important;
+}
+
