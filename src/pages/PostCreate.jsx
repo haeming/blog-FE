@@ -15,6 +15,7 @@ import '../styles/editor.css';
 import DOMPurify from "dompurify";
 import postApi from "../api/postApi.js";
 import usePageService from "../commons/hooks/useNavigationService.js";
+import imageApi from "../api/imageApi.js";
 
 export default function PostCreate() {
     const editorRef = useRef();
@@ -24,51 +25,58 @@ export default function PostCreate() {
     const [tagInput, setTagInput] = useState("");
     const [files, setFiles] = useState([]);
 
-    const { createPost } = postApi();
+    const post = postApi();
+    const image = imageApi();
     const pageService = usePageService();
 
-    const handleImageInsert = (blob, callback) => {
+    const handleImageInsert = async (blob, callback) => {
         const localUrl = URL.createObjectURL(blob);
-        callback(localUrl, 'image'); // 에디터 안에 즉시 이미지 미리보기 표시
-        setFiles((prev) => [...prev, blob]); // 실제 업로드는 createPost 단계에서 처리
+        callback(localUrl, "image"); // 프리뷰용으로 먼저 표시
+
+        try {
+            const formData = new FormData();
+            formData.append("file", blob);
+
+            const result = await image.uploadTempImages(formData);
+            const uploadedUrl = Array.isArray(result.result)
+                ? result.result[0]
+                : result.result;
+
+            setFiles((prev) => [...prev, { blobUrl: localUrl, uploadedUrl }]);
+        } catch (error) {
+            console.error("이미지 업로드 실패:", error);
+        }
     };
 
     const handleSave = async () => {
-        if(!title.trim()){
+        if (!title.trim()) {
             alert("제목을 입력해 주세요.");
             return;
         }
 
-        const markdown = editorRef.current.getInstance().getMarkdown();
-        const html = editorRef.current.getInstance().getHTML();
+        let markdown = editorRef.current.getInstance().getMarkdown();
 
-        // 보안 필터
-        const cleanHTML = DOMPurify.sanitize(html, {
-            ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3',
-                'ul', 'ol', 'li', 'code', 'pre', 'blockquote',
-                'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'span'],
-            ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'style']
+        files.forEach(({ blobUrl, uploadedUrl }) => {
+            markdown = markdown.replaceAll(blobUrl, uploadedUrl);
         });
 
+        markdown = markdown.replace(/!\[image]\(blob:[^)]+\)/g, "");
+
+        const postData = {
+            title,
+            content: markdown,
+            categoryId: parseInt(categoryId),
+        };
+
         try {
-            const postData = {
-                title: title,
-                content: markdown,
-                categoryId: parseInt(categoryId),
-            }
-
-            const response = await createPost(postData, files);
+            // 이미지 업로드는 이미 위에서 완료됨. files 필요 없음
+            const response = await post.createPost(postData, []);
             console.log("게시글 등록 완료", response);
-            alert("게시글 등록이 완료되었습니다!");
-
-            if (response?.result?.id) {
-                pageService.goToPostDetail(response.result.id);
-            } else {
-                pageService.goToHome();
-            }
-        } catch (error){
-            console.error("게시글 등록 에러: ", error);
-            alert("게시글 등록 중 에러가 발생했습니다.");
+            alert("게시글 등록 완료!");
+            pageService.goToPostDetail(response.result.id);
+        } catch (error) {
+            console.error("게시글 등록 에러:", error);
+            alert("게시글 등록 중 오류가 발생했습니다.");
         }
     };
 
