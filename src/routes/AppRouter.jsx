@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage.jsx";
 import Layout from "../components/Layout.jsx";
 import CategoryManagement from "../pages/CategoryManagement.jsx";
 import PostCreate from "../pages/PostCreate.jsx";
+import PostDetail from "../pages/PostDetail.jsx";
 
 export function AppRouter(){
 
@@ -17,6 +18,7 @@ export function AppRouter(){
                     <Route path="/" element={<Home />} />
                     <Route path="/category" element={<CategoryManagement />} />
                     <Route path="/post/write" element={<PostCreate/>} />
+                    <Route path="/post/:id" element={<PostDetail/>} />
                 </Route>
             ) : (
                 <Route path="*" element={<LoginPage />} />

@@ -14,6 +14,7 @@ import 'tui-color-picker/dist/tui-color-picker.css';
 import '../styles/editor.css';
 import DOMPurify from "dompurify";
 import postApi from "../api/postApi.js";
+import usePageService from "../commons/hooks/useNavigationService.js";
 
 export default function PostCreate() {
     const editorRef = useRef();
@@ -24,6 +25,7 @@ export default function PostCreate() {
     const [files, setFiles] = useState([]);
 
     const { createPost } = postApi();
+    const { goToBack } = usePageService();
 
     const handleImageInsert = (blob, callback) => {
         const localUrl = URL.createObjectURL(blob);
@@ -161,16 +163,17 @@ export default function PostCreate() {
 
                 {/* 하단 버튼 */}
                 <div className="mt-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-                    <button className="px-6 py-3 text-slate-600 bg-white hover:bg-slate-50 rounded-xl transition-all border border-slate-200 font-medium shadow-sm">
+                    <button className="px-6 py-3 text-slate-600 bg-white hover:bg-slate-50 rounded-xl transition-all border border-slate-200 font-medium shadow-sm cursor-pointer">
                         임시저장
                     </button>
                     <div className="flex gap-3">
-                        <button className="flex-1 sm:flex-none px-6 py-3 text-slate-600 bg-white hover:bg-slate-50 rounded-xl transition-all border border-slate-200 font-medium shadow-sm">
+                        <button className="flex-1 sm:flex-none px-6 py-3 text-slate-600 bg-white hover:bg-slate-50 rounded-xl transition-all border border-slate-200 font-medium shadow-sm cursor-pointer"
+                        onClick={goToBack}>
                             취소
                         </button>
                         <button
                             onClick={handleSave}
-                            className="flex-1 sm:flex-none px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/30 font-medium"
+                            className="flex-1 sm:flex-none px-8 py-3 bg-gradient-to-r from-custom-purple to-custom-purple2 text-white rounded-xl hover:custom-purple3 hover:to-custom-purple transition-all shadow-lg shadow-purple-500/30 font-medium cursor-pointer"
                         >
                             발행하기
                         </button>
@@ -178,7 +181,7 @@ export default function PostCreate() {
                 </div>
 
                 {/* 팁 카드 */}
-                <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 shadow-sm">
+                <div className="mt-8 bg-gradient-to-r from-custom-red to-custom-red border border-custom-red2 rounded-2xl p-6 shadow-sm">
                     <h3 className="font-semibold text-blue-900 mb-4 flex items-center gap-2 text-lg">
                         💡 마크다운 팁
                     </h3>
