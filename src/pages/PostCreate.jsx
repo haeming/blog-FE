@@ -25,7 +25,7 @@ export default function PostCreate() {
     const [files, setFiles] = useState([]);
 
     const { createPost } = postApi();
-    const { goToBack } = usePageService();
+    const pageService = usePageService();
 
     const handleImageInsert = (blob, callback) => {
         const localUrl = URL.createObjectURL(blob);
@@ -60,6 +60,12 @@ export default function PostCreate() {
             const response = await createPost(postData, files);
             console.log("게시글 등록 완료", response);
             alert("게시글 등록이 완료되었습니다!");
+
+            if (response?.result?.id) {
+                pageService.goToPostDetail(response.result.id);
+            } else {
+                pageService.goToHome();
+            }
         } catch (error){
             console.error("게시글 등록 에러: ", error);
             alert("게시글 등록 중 에러가 발생했습니다.");
@@ -168,7 +174,7 @@ export default function PostCreate() {
                     </button>
                     <div className="flex gap-3">
                         <button className="flex-1 sm:flex-none px-6 py-3 text-slate-600 bg-white hover:bg-slate-50 rounded-xl transition-all border border-slate-200 font-medium shadow-sm cursor-pointer"
-                        onClick={goToBack}>
+                        onClick={pageService.goToBack}>
                             취소
                         </button>
                         <button
