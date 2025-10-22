@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Editor } from "@toast-ui/react-editor";
 import Prism from "prismjs";
 import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight";
@@ -12,10 +12,11 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '../styles/editor.css';
-import DOMPurify from "dompurify";
 import postApi from "../api/postApi.js";
-import usePageService from "../commons/hooks/useNavigationService.js";
 import imageApi from "../api/imageApi.js";
+import categoryApi from "../api/categoryApi.js";
+import usePageService from "../commons/hooks/useNavigationService.js";
+
 
 export default function PostCreate() {
     const editorRef = useRef();
@@ -23,11 +24,27 @@ export default function PostCreate() {
     const [categoryId, setCategoryId] = useState("");
     const [tags, setTags] = useState([]);
     const [tagInput, setTagInput] = useState("");
+    const [categoryList, setCategoryList] = useState([]);
     const [files, setFiles] = useState([]);
 
     const post = postApi();
     const image = imageApi();
+    const category = categoryApi();
     const pageService = usePageService();
+
+    useEffect(() => {
+        const categoryList = async() => {
+            try {
+                const response = await category.getCategoryList();
+                console.log(response.result);
+                setCategoryList(response.result);
+            } catch (error){
+                console.error("카테고리 리스트 불러오기 에러", error);
+            }
+        }
+
+        categoryList();
+    },[])
 
     const handleImageInsert = async (blob, callback) => {
         const localUrl = URL.createObjectURL(blob);
@@ -75,7 +92,7 @@ export default function PostCreate() {
             pageService.goToPostDetail(response.result.id);
         } catch (error) {
             console.error("게시글 등록 에러:", error);
-            alert("게시글 등록 중 오류가 발생했습니다.");
+            alert(error.response.data.message);
         }
     };
 
@@ -136,10 +153,11 @@ export default function PostCreate() {
                                 }}
                             >
                                 <option value="">카테고리 선택</option>
-                                <option value="1">React</option>
-                                <option value="2">JavaScript</option>
-                                <option value="3">Python</option>
-                                <option value="4">CSS / UI</option>
+                                {categoryList.map((c, index) => (
+                                    <option key={index} value={c.id}>
+                                        {c.categoryName}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
