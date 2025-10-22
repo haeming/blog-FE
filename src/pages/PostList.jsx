@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import postApi from "../api/postApi";
+import usePageService from "../commons/hooks/useNavigationService";
 
 export default function PostList(){
 
@@ -9,6 +10,7 @@ export default function PostList(){
     const [postList, setPostList] = useState([]);
 
     const post = postApi();
+    const pageService = usePageService();
 
     useEffect(() => {
         const postList = async () => {
@@ -33,7 +35,7 @@ export default function PostList(){
             </div>
         ) : (
             postList.map((p, index) => (
-            <div key={p.id ?? index} className="border-b p-4">
+            <div key={p.id ?? index} className="border-b p-4 cursor-pointer hover:text-custom-purple4" onClick={() => pageService.goToPostDetail(p.id)}>
                 <h3 className="text-lg font-semibold">{p.title}</h3>
                 <p className="text-gray-600 line-clamp-3">
                     {p.content}
