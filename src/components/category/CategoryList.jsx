@@ -28,7 +28,7 @@ export default function CategoryList({categories, categoryData, categoryCount}){
     }
 
     if(!categories || categories.length === 0){
-        console.log("gg",categories)
+        console.log("카테고리가 존재하지 않습니다.",categories)
         return(
             <>
                 <div

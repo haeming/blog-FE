@@ -25,8 +25,10 @@ export default function CategoryManagement(){
             await category.createCategory(data.categoryName, file);
             await getCategoryCount(); // 등록 후 카운트 갱신
             await categoryData();
-        } catch (err) {
-            console.error(err);
+        } catch (error) {
+            console.error("카테고리 등록 에러", error);
+            const message = error.response?.data?.message || "카테고리 등록에 실패했습니다.";
+            alert(message)
         }
     };
 

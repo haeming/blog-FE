@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Editor } from "@toast-ui/react-editor";
 import Prism from "prismjs";
 import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight";
@@ -12,10 +12,11 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '../styles/editor.css';
-import DOMPurify from "dompurify";
 import postApi from "../api/postApi.js";
-import usePageService from "../commons/hooks/useNavigationService.js";
 import imageApi from "../api/imageApi.js";
+import categoryApi from "../api/categoryApi.js";
+import usePageService from "../commons/hooks/useNavigationService.js";
+
 
 export default function PostCreate() {
     const editorRef = useRef();
@@ -23,15 +24,31 @@ export default function PostCreate() {
     const [categoryId, setCategoryId] = useState("");
     const [tags, setTags] = useState([]);
     const [tagInput, setTagInput] = useState("");
+    const [categoryList, setCategoryList] = useState([]);
     const [files, setFiles] = useState([]);
 
     const post = postApi();
     const image = imageApi();
+    const category = categoryApi();
     const pageService = usePageService();
+
+    useEffect(() => {
+        const categoryList = async() => {
+            try {
+                const response = await category.getCategoryList();
+                console.log(response.result);
+                setCategoryList(response.result);
+            } catch (error){
+                console.error("카테고리 리스트 불러오기 에러", error);
+            }
+        }
+
+        categoryList();
+    },[])
 
     const handleImageInsert = async (blob, callback) => {
         const localUrl = URL.createObjectURL(blob);
-        callback(localUrl, "image"); // 프리뷰용으로 먼저 표시
+        callback(localUrl, "image");
 
         try {
             const formData = new FormData();
@@ -69,14 +86,14 @@ export default function PostCreate() {
         };
 
         try {
-            // 이미지 업로드는 이미 위에서 완료됨. files 필요 없음
             const response = await post.createPost(postData, []);
             console.log("게시글 등록 완료", response);
             alert("게시글 등록 완료!");
             pageService.goToPostDetail(response.result.id);
         } catch (error) {
             console.error("게시글 등록 에러:", error);
-            alert("게시글 등록 중 오류가 발생했습니다.");
+            const message = error.response?.data?.message || "게시글 등록에 실패했습니다.";
+            alert(message);
         }
     };
 
@@ -106,16 +123,45 @@ export default function PostCreate() {
                     </h2>
                 </div>
 
-                {/* 제목 입력 */}
-                <div
-                    className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 transition-shadow hover:shadow-md">
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="제목을 입력하세요"
-                        className="w-full text-2xl sm:text-3xl font-bold outline-none placeholder-slate-300 text-slate-800"
-                    />
+                {/* 제목 & 카테고리 */}
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 transition-shadow hover:shadow-md">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                        {/* 제목 입력 */}
+                        <div className="flex-1 min-w-0">
+                            <input
+                                type="text"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="제목을 입력하세요"
+                                className="w-full text-2xl sm:text-3xl font-bold outline-none placeholder-slate-300 text-slate-800 leading-normal py-2"
+                            />
+                        </div>
+
+                        {/* 카테고리 선택 */}
+                        <div className="sm:w-56 flex-shrink-0">
+                            <select
+                                value={categoryId}
+                                onChange={(e) => setCategoryId(e.target.value)}
+                                className="w-full bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl px-4 py-3 outline-none text-slate-700 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 focus:from-white focus:to-purple-50 transition-all cursor-pointer font-semibold text-sm shadow-sm hover:shadow-md hover:border-purple-300"
+                                style={{
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a855f7' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundPosition: 'right 12px center',
+                                    paddingRight: '36px',
+                                    appearance: 'none',
+                                    WebkitAppearance: 'none',
+                                    MozAppearance: 'none'
+                                }}
+                            >
+                                <option value="">카테고리 선택</option>
+                                {categoryList.map((c, index) => (
+                                    <option key={index} value={c.id}>
+                                        {c.categoryName}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 {/* 태그 입력 */}
@@ -153,7 +199,7 @@ export default function PostCreate() {
                         language="ko-KR"
                         height="600px"
                         initialEditType="markdown"
-                            previewStyle="vertical"
+                        previewStyle="vertical"
                         useCommandShortcut={true}
                         plugins={[[codeSyntaxHighlight, { highlighter: Prism }],
                             colorSyntax,

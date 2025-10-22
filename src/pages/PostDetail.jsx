@@ -10,6 +10,7 @@ import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-python";
 import "prismjs/components/prism-java";
 import "prismjs/components/prism-json";
+import "prismjs/components/prism-sql";
 import "../styles/editor.css";
 import ConfirmModal from "../commons/modals/ConfirmModal.jsx";
 import { toast } from "react-toastify";
@@ -18,17 +19,34 @@ import baseURL from "../config/apiBaseUrl.js";
 
 const renderer = new marked.Renderer();
 
-renderer.code = (code, lang) => {
-    const actualCode =
-        typeof code === "object" && code !== null && "text" in code
-            ? code.text
-            : code;
-
-    const safeCode = typeof actualCode === "string" ? actualCode : String(actualCode || "");
-    const language = Prism.languages[lang] || Prism.languages.javascript;
-    const html = Prism.highlight(safeCode, language, lang);
-
-    return `<pre class="language-${lang}"><code class="language-${lang}">${html}</code></pre>`;
+renderer.code = function({ text, lang, escaped }) {
+    console.log('Code block - lang:', lang, 'text length:', text?.length);
+    
+    const safeCode = text || '';
+    
+    const languageMap = {
+        'js': 'javascript',
+        'jsx': 'jsx',
+        'ts': 'typescript',
+        'tsx': 'tsx',
+        'py': 'python',
+        'sh': 'bash',
+        'html': 'markup'
+    };
+    
+    const normalizedLang = lang ? (languageMap[lang.toLowerCase()] || lang.toLowerCase()) : 'javascript';
+    
+    console.log('Using language:', normalizedLang);
+    
+    const grammar = Prism.languages[normalizedLang] || Prism.languages.java;
+    
+    try {
+        const html = Prism.highlight(safeCode, grammar, normalizedLang);
+        return `<pre class="language-${normalizedLang}"><code class="language-${normalizedLang}">${html}</code></pre>`;
+    } catch (error) {
+        console.error(`Error highlighting ${normalizedLang}:`, error);
+        return `<pre class="language-${normalizedLang}"><code class="language-${normalizedLang}">${DOMPurify.sanitize(safeCode)}</code></pre>`;
+    }
 };
 
 marked.setOptions({
