@@ -16,6 +16,10 @@ export default function usePageService(){
         navigate("/category");
     }
 
+    const goToPostList = () => {
+        navigate("/post/list");
+    }
+
     const goToPostWrite = () => {
         navigate("/post/write")
     }
@@ -24,5 +28,5 @@ export default function usePageService(){
         navigate(`/post/${id}`)
     }
 
-    return { goToBack, goToHome, goToCategory, goToPostWrite, goToPostDetail };
+    return { goToBack, goToHome, goToCategory, goToPostList, goToPostWrite, goToPostDetail };
 }

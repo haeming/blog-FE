@@ -25,7 +25,7 @@ export default function TopBar() {
                 {/* 데스크톱 메뉴 */}
                 <div className="hidden md:flex items-center justify-center space-x-8 text-sm font-bold">
                     <span className="cursor-pointer hover:text-custom-purple">DASHBOARD</span>
-                    <span className="cursor-pointer hover:text-custom-purple">POSTS</span>
+                    <span className="cursor-pointer hover:text-custom-purple" onClick={pageService.goToPostList}>POSTS</span>
                     <span className="cursor-pointer hover:text-custom-purple">CATEGORIES</span>
                     <span className="cursor-pointer hover:text-custom-purple">COMMENTS</span>
                 </div>

@@ -12,6 +12,12 @@ export default function postApi(){
         return await request("get", `/api/admin/posts/${id}`, null, config);
     }
 
+    const getPosts = async( page = 0, size = 10, sort="createdAt,desc" ) => {
+        const config = getAuthHeaders();
+        const params = new URLSearchParams({ page, size, sort }).toString();
+        return await request("get", `/api/admin/posts?${params}`, null, config);
+    }
+
     const createPost = async(postData, files) => {
         const config = getAuthHeaders();
         const formData = new FormData();
@@ -44,5 +50,5 @@ export default function postApi(){
         return await request("post", "/api/admin/posts/temp-image", formData, config);
     };
 
-    return { postCount, createPost, getPost, deletePost, uploadTempImages };
+    return { postCount, createPost, getPost, getPosts, deletePost, uploadTempImages };
 }
