@@ -35,7 +35,9 @@ export default function PostList(){
             postList.map((p, index) => (
             <div key={p.id ?? index} className="border-b p-4">
                 <h3 className="text-lg font-semibold">{p.title}</h3>
-                <p className="text-gray-600">{p.content}</p>
+                <p className="text-gray-600 line-clamp-3">
+                    {p.content}
+                </p>
             </div>
             ))
         )}
