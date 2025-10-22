@@ -100,4 +100,17 @@ export default function PostList(){
         )}
         </div>
     );
+
+    return(
+        <>
+            <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+                {postList.map((p, index) => (
+                    <div key={index} className="border-b p-4">
+                        <h3 className="text-lg font-semibold">{p.title}</h3>
+                        <p className="text-gray-600">{p.content}</p>
+                    </div>
+                ))}
+            </div>
+        </>
+    )
 }
