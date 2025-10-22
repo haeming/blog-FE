@@ -92,7 +92,8 @@ export default function PostCreate() {
             pageService.goToPostDetail(response.result.id);
         } catch (error) {
             console.error("게시글 등록 에러:", error);
-            alert(error.response.data.message);
+            const message = error.response?.data?.message || "게시글 등록에 실패했습니다.";
+            alert(message);
         }
     };
 
