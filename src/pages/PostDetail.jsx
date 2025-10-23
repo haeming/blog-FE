@@ -106,7 +106,7 @@ export default function PostDetail() {
             await post.deletePost(selectedId);
             setIsModalOpen(false);
             toast.success("게시글이 성공적으로 삭제되었습니다.");
-            pageService.goToHome();
+            pageService.goToPostList();
         } catch (err) {
             console.error("게시글 삭제 에러", err);
         }

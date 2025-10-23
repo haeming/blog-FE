@@ -7,6 +7,9 @@ export default function usePageService(){
     const goToBack = () => {
         navigate(-1);
     }
+    const goToBackTwoSteps = () => {
+        navigate(-2);
+    }
 
     const goToHome = () => {
         navigate("/");
@@ -28,5 +31,5 @@ export default function usePageService(){
         navigate(`/post/${id}`)
     }
 
-    return { goToBack, goToHome, goToCategory, goToPostList, goToPostWrite, goToPostDetail };
+    return { goToBack, goToBackTwoSteps, goToHome, goToCategory, goToPostList, goToPostWrite, goToPostDetail };
 }

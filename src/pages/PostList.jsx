@@ -17,9 +17,9 @@ export default function PostList(){
     useEffect(() => {
         const postList = async () => {
             try {
-                const pageData = await post.getPosts(page, size);
-                setPostList(pageData.content || []);
-                setTotalPages(pageData.totalPages || 0);
+                const response = await post.getPosts(page, size);
+                setPostList(response.content || []);
+                setTotalPages(response.totalPages || 0);
             } catch (error){
                 console.error("게시글 리스트 불러오기 에러", error);
             }

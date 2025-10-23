@@ -36,8 +36,8 @@ export default function PostCreate() {
         const categoryList = async() => {
             try {
                 const response = await category.getCategoryList();
-                console.log(response.result);
-                setCategoryList(response.result);
+                console.log(response);
+                setCategoryList(response);
             } catch (error){
                 console.error("카테고리 리스트 불러오기 에러", error);
             }

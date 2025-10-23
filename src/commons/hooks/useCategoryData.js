@@ -7,8 +7,8 @@ export default function useCategoryData (){
 
     const categoryData = async () => {
         try {
-            const res = await categoryApi.getCategoryList();
-            const categoryList = res.result;
+            const categoryList = await categoryApi.getCategoryList();
+            console.log(categoryList);
             const categoriesWithCount = await Promise.all(
                 categoryList.map(async (category) => {
                     try {
