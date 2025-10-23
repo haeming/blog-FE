@@ -17,8 +17,7 @@ export default function PostList(){
     useEffect(() => {
         const postList = async () => {
             try {
-                const response = await post.getPosts(page, size);
-                const pageData = response.result;
+                const pageData = await post.getPosts(page, size);
                 setPostList(pageData.content || []);
                 setTotalPages(pageData.totalPages || 0);
             } catch (error){

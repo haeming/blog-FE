@@ -12,7 +12,7 @@ export default function Home(){
     const getPostCount = async () => {
         try {
             const count = await post.postCount();
-            setPostCount(count.result);
+            setPostCount(count);
         } catch (error){
             console.error("게시글 불러오기 에러", error);
         }

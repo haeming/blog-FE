@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo, useLayoutEffect } from "react";
+import { useEffect, useState, useMemo, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
@@ -54,21 +54,8 @@ marked.setOptions({
     breaks: true,
 });
 
-// marked.setOptions({
-//     highlight: function (code, lang) {
-//         if (Prism.languages[lang]) {
-//             const language = Prism.languages[lang] || Prism.languages.javascript;
-//             return Prism.highlight(code, language, lang);
-//         } else {
-//             return code;
-//         }
-//     },
-//     breaks: true,
-// });
-
 export default function PostDetail() {
     const { id } = useParams();
-    const viewerRef = useRef();
     const [postInfo, setPostInfo] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
@@ -79,7 +66,7 @@ export default function PostDetail() {
         const getPostInfo = async () => {
             try {
                 const response = await post.getPost(id);
-                setPostInfo(response.result);
+                setPostInfo(response);
             } catch (error) {
                 console.error("단일 게시글 조회 오류", error);
             }
