@@ -1,25 +1,26 @@
 import usePageService from "../commons/hooks/useNavigationService"
 import { Grape, FolderClosed, MessageSquareMore, PencilLine, Newspaper, MessageSquareHeart, UsersRound, ArrowRight } from 'lucide-react';
-import { postService } from "../services/postService";
 import { useEffect, useState } from "react";
+import postApi from "../api/postApi.js";
 
 export default function Home(){
 
-    const pageService = usePageService();
     const [postCount, setPostCount] = useState(0);
-    
+    const pageService = usePageService();
+    const post = postApi();
+
+    const getPostCount = async () => {
+        try {
+            const count = await post.postCount();
+            setPostCount(count);
+        } catch (error){
+            console.error("게시글 불러오기 에러", error);
+        }
+    };
+
     useEffect(() => {
-        const getPostCount = async () => {
-            try {
-                const count = await postService.postCount();
-                setPostCount(count ?? 0);
-            } catch (error){
-                console.error("게시글 불러오기 에러", error);
-            }
-        };
-        
         getPostCount();
-    }, [])
+    },[])
 
     return(
         <>
@@ -44,7 +45,7 @@ export default function Home(){
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-neutral-500 text-sm font-medium">전체 글</p>
-                                    <p className="text-3xl font-bold mt-2 text-neutral-900">{postCount}</p>
+                                    <p className="text-3xl font-bold mt-2 text-neutral-900">{(postCount ?? 0).toLocaleString()}</p>
                                 </div>
                                 <Newspaper className="w-10 h-10 text-custom-purple"/>
                             </div>
@@ -81,7 +82,6 @@ export default function Home(){
                         <button className="bg-custom-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 rounded-2xl p-6 transition-all group cursor-pointer"
                             onClick={pageService.goToCategory}>
                             <FolderClosed className="w-8 h-8 text-custom-purple2 inline align-middle" />
-                            {/* <img src="/icons/directory1.png" className="w-8 h-8 text-custom-purple2 inline align-middle" alt="directory"/> */}
                             <div className="font-semibold text-lg">카테고리 관리</div>
                         </button>
                         <button className="bg-custom-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 text-neutral-900 rounded-2xl p-6 transition-all group cursor-pointer">

@@ -55,9 +55,9 @@ export default function PostCreate() {
             formData.append("file", blob);
 
             const result = await image.uploadTempImages(formData);
-            const uploadedUrl = Array.isArray(result.result)
-                ? result.result[0]
-                : result.result;
+            const uploadedUrl = Array.isArray(result)
+                ? result[0]
+                : result;
 
             setFiles((prev) => [...prev, { blobUrl: localUrl, uploadedUrl }]);
         } catch (error) {
@@ -89,7 +89,7 @@ export default function PostCreate() {
             const response = await post.createPost(postData, []);
             console.log("게시글 등록 완료", response);
             alert("게시글 등록 완료!");
-            pageService.goToPostDetail(response.result.id);
+            pageService.goToPostDetail(response.id);
         } catch (error) {
             console.error("게시글 등록 에러:", error);
             const message = error.response?.data?.message || "게시글 등록에 실패했습니다.";
