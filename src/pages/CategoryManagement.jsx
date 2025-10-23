@@ -38,31 +38,33 @@ export default function CategoryManagement(){
 
     return(
         <>
-            <div className="flex items-center justify-between my-5">
-                <div className="flex items-center gap-1">
-                    <img src="/icons/directory1.png" className="w-12 h-12 text-custom-purple2 inline align-middle"
-                         alt="directory"/>
-                    <h2 className="text-2xl font-bold">카테고리 관리</h2>
+            <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                        <img src="/icons/directory1.png" className="w-12 h-12 text-custom-purple2 inline align-middle"
+                            alt="directory"/>
+                        <h2 className="text-2xl font-bold">카테고리 관리</h2>
+                    </div>
+                    <button className="bg-custom-purple3 cursor-pointer px-2 py-1 rounded-lg
+                        text-custom-white text-sm flex items-center gap-1 shadow-sm
+                        hover:bg-custom-purple4 hover:scale-101 transform">
+                        <Plus className="w-4 h-4"/>
+                        <span className="text-custom-white">카테고리 추가</span>
+                    </button>
                 </div>
-                <button className="bg-custom-purple3 cursor-pointer px-2 py-1 rounded-lg
-                    text-custom-white text-sm flex items-center gap-1 shadow-sm
-                    hover:bg-custom-purple4 hover:scale-101 transform">
-                    <Plus className="w-4 h-4"/>
-                    <span className="text-custom-white">카테고리 추가</span>
-                </button>
+
+                <CategoryForm
+                    mode="create"
+                    onSubmit={handleCreate}
+                />
+
+                <div className="rounded-lg flex items-center justify-end space-x-2 mt-10">
+                    <span className="text-sm text-custom-gray2">총 카테고리 개수</span>
+                    <span className="text-custom-gray3 font-bold">{count}</span>
+                </div>
+
+                <CategoryList categories={categories} categoryData={categoryData} categoryCount={getCategoryCount} />
             </div>
-
-            <CategoryForm
-                mode="create"
-                onSubmit={handleCreate}
-            />
-
-            <div className="rounded-lg flex items-center justify-end space-x-2 mt-10">
-                <span className="text-sm text-custom-gray2">총 카테고리 개수</span>
-                <span className="text-custom-gray3 font-bold">{count}</span>
-            </div>
-
-            <CategoryList categories={categories} categoryData={categoryData} categoryCount={getCategoryCount} />
         </>
     )
 }
