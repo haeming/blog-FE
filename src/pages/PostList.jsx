@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import postApi from "../api/postApi";
 import usePageService from "../commons/hooks/useNavigationService";
+import useDateFormat from "../commons/hooks/useDateFormat.js";
 
 export default function PostList(){
 
@@ -11,6 +12,7 @@ export default function PostList(){
 
     const post = postApi();
     const pageService = usePageService();
+    const { formatDateTime } = useDateFormat();
 
     useEffect(() => {
         const postList = async () => {
@@ -35,11 +37,19 @@ export default function PostList(){
             </div>
         ) : (
             postList.map((p, index) => (
-            <div key={p.id ?? index} className="border-b p-4 cursor-pointer hover:text-custom-purple4" onClick={() => pageService.goToPostDetail(p.id)}>
-                <h3 className="text-lg font-semibold">{p.title}</h3>
-                <p className="text-gray-600 line-clamp-3">
-                    {p.content}
-                </p>
+            <div key={p.id ?? index} className="border-b border-b-neutral-300 p-4 hover:text-custom-purple
+             hover:border-b-custom-purple">
+                <div className="cursor-pointer" onClick={() => pageService.goToPostDetail(p.id)}>
+                    <h3 className="text-lg font-semibold">{p.title}</h3>
+                    <p className="text-gray-600 line-clamp-3 mb-3">
+                        {p.content}
+                    </p>
+                </div>
+                <div className="text-custom-gray2 font-thin text-xs">
+                    <span className="text-custom-purple2 font-semibold">{p.categoryName}</span>
+                    <span className="mx-3">|</span>
+                    <span>{formatDateTime(p.createdAt)}</span>
+                </div>
             </div>
             ))
         )}
