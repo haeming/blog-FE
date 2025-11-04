@@ -18,7 +18,7 @@ function App() {
         if(token){
           try {
             const res = await adminApi.verifyToken();
-            const accountName = res.result.accountName;
+            const accountName = res.accountName;
             dispatch(loginAction({accountName, token}));
           } catch (err){
             console.error("토큰 검증 실패", err);
