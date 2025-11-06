@@ -26,7 +26,7 @@ export default function TopBar() {
                 <div className="hidden md:flex items-center justify-center space-x-8 text-sm font-bold">
                     <span className="cursor-pointer hover:text-custom-purple">DASHBOARD</span>
                     <span className="cursor-pointer hover:text-custom-purple" onClick={pageService.goToPostList}>POSTS</span>
-                    <span className="cursor-pointer hover:text-custom-purple">CATEGORIES</span>
+                    <span className="cursor-pointer hover:text-custom-purple" onClick={pageService.goToCategory}>CATEGORIES</span>
                     <span className="cursor-pointer hover:text-custom-purple">COMMENTS</span>
                 </div>
 
@@ -53,8 +53,8 @@ export default function TopBar() {
                 <div className="md:hidden border-t border-neutral-200 bg-white">
                     <div className="flex flex-col p-4 space-y-4 text-sm font-bold">
                         <span className="cursor-pointer hover:text-custom-purple py-2">DASHBOARD</span>
-                        <span className="cursor-pointer hover:text-custom-purple py-2">POSTS</span>
-                        <span className="cursor-pointer hover:text-custom-purple py-2">CATEGORIES</span>
+                        <span className="cursor-pointer hover:text-custom-purple py-2" onClick={pageService.goToPostList}>POSTS</span>
+                        <span className="cursor-pointer hover:text-custom-purple py-2" onClick={pageService.goToCategory}>CATEGORIES</span>
                         <span className="cursor-pointer hover:text-custom-purple py-2">COMMENTS</span>
                         <span className="cursor-pointer hover:text-custom-purple py-2 border-t border-neutral-200 pt-4"
                               onClick={handleLogout}>
