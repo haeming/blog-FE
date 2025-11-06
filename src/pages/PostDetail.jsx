@@ -16,6 +16,7 @@ import ConfirmModal from "../commons/modals/ConfirmModal.jsx";
 import { toast } from "react-toastify";
 import usePageService from "../commons/hooks/useNavigationService.js";
 import baseURL from "../config/apiBaseUrl.js";
+import CommentSection from "../components/comment/CommentSection.jsx";
 
 const renderer = new marked.Renderer();
 
@@ -59,6 +60,9 @@ export default function PostDetail() {
     const [postInfo, setPostInfo] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState({ nickname: '', password: '', content: '' });
+    const [replyTo, setReplyTo] = useState(null);
     const post = postApi();
     const pageService = usePageService();
 
@@ -112,6 +116,74 @@ export default function PostDetail() {
         }
     };
 
+    const handleCommentSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!newComment.nickname || !newComment.password || !newComment.content) {
+            toast.error("모든 필드를 입력해주세요.");
+            return;
+        }
+
+        try {
+            // API 연결 시 사용
+            // await commentApi.createComment(id, {
+            //     ...newComment,
+            //     parent_id: replyTo
+            // });
+            
+            // 임시로 목록에 추가
+            const newCommentData = {
+                id: Date.now(),
+                post_id: id,
+                nickname: newComment.nickname,
+                content: newComment.content,
+                parent_id: replyTo,
+                is_pinned: false,
+                created_at: new Date().toISOString()
+            };
+            setComments([...comments, newCommentData]);
+            
+            toast.success("댓글이 등록되었습니다.");
+            setNewComment({ nickname: '', password: '', content: '' });
+            setReplyTo(null);
+        } catch (error) {
+            console.error("댓글 등록 오류", error);
+            toast.error("댓글 등록에 실패했습니다.");
+        }
+    };
+
+    const handleReply = (commentId) => {
+        setReplyTo(commentId);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+
+    const handleCancelReply = () => {
+        setReplyTo(null);
+    };
+
+    const organizeComments = (comments) => {
+        const commentMap = {};
+        const rootComments = [];
+
+        comments.forEach(comment => {
+            commentMap[comment.id] = { ...comment, replies: [] };
+        });
+
+        comments.forEach(comment => {
+            if (comment.parent_id) {
+                if (commentMap[comment.parent_id]) {
+                    commentMap[comment.parent_id].replies.push(commentMap[comment.id]);
+                }
+            } else {
+                rootComments.push(commentMap[comment.id]);
+            }
+        });
+
+        return rootComments;
+    };
+
+    const organizedComments = useMemo(() => organizeComments(comments), [comments]);
+
     if (!postInfo) {
         return (
             <div className="min-h-screen flex justify-center items-center text-slate-500 text-lg">
@@ -160,6 +232,16 @@ export default function PostDetail() {
                             dangerouslySetInnerHTML={{__html: htmlContent}}
                         />
                     </div>
+
+                    <CommentSection
+                        comments={organizedComments}
+                        newComment={newComment}
+                        setNewComment={setNewComment}
+                        onSubmit={handleCommentSubmit}
+                        onReply={handleReply}
+                        replyTo={replyTo}
+                        onCancelReply={handleCancelReply}
+                    />
                 </div>
             </div>
 
