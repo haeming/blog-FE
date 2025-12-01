@@ -1,25 +1,38 @@
 import usePageService from "../commons/hooks/useNavigationService"
 import { Grape, FolderClosed, MessageSquareMore, PencilLine, Newspaper, MessageSquareHeart, UsersRound, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from "react";
+import commentApi from "../api/commentApi.js";
 import postApi from "../api/postApi.js";
 
 export default function Home(){
 
     const [postCount, setPostCount] = useState(0);
+    const [commentCount, setCommentCount] = useState(0);
     const pageService = usePageService();
     const post = postApi();
+    const comment = commentApi();
 
     const getPostCount = async () => {
         try {
-            const count = await post.postCount();
-            setPostCount(count);
+            const getPostCount = await post.postCount();
+            setPostCount(getPostCount);
         } catch (error){
-            console.error("게시글 불러오기 에러", error);
+            console.error("게시글 수 불러오기 에러", error);
         }
     };
 
+    const getCommentCount = async() => {
+        try {
+            const getCommentCount = await comment.commentCount();
+            setCommentCount(getCommentCount);
+        } catch (error){
+            console.error("댓글 수 불러오기 에러", error);
+        }
+    }
+
     useEffect(() => {
         getPostCount();
+        getCommentCount();
     },[])
 
     return(
@@ -55,7 +68,7 @@ export default function Home(){
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-neutral-500 text-sm font-medium">댓글</p>
-                                    <p className="text-3xl font-bold mt-2 text-neutral-900">156</p>
+                                    <p className="text-3xl font-bold mt-2 text-neutral-900">{(commentCount ?? 0).toLocaleString()}</p>
                                 </div>
                                 <MessageSquareHeart className="w-10 h-10 text-custom-purple" />
                             </div>
