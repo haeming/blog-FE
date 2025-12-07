@@ -7,5 +7,10 @@ export default function commentApi(){
         return await request("get", "/api/admin/comments/count", null, config);
     };
 
-    return { commentCount };
+    const commentList = async (postId) => {
+        const config = getAuthHeaders();
+        return await request("get", "/api/admin/comments", postId, config);
+    }
+
+    return { commentCount, commentList };
 }
