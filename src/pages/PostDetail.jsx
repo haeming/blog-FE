@@ -164,7 +164,7 @@ export default function PostDetail() {
                     </div>
                     <div>
                         <CommentList postId={postInfo.id} />
-                        <CommentInputBox />
+                        <CommentInputBox postId={postInfo.id} />
                     </div>
                 </div>
             </div>
