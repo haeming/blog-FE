@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import usePageService from "../commons/hooks/useNavigationService.js";
 import baseURL from "../config/apiBaseUrl.js";
 import CommentList from "../components/comment/CommentList.jsx";
+import CommentInputBox from "../components/comment/CommentInputBox.jsx";
 
 const renderer = new marked.Renderer();
 
@@ -163,6 +164,7 @@ export default function PostDetail() {
                     </div>
                     <div>
                         <CommentList postId={postInfo.id} />
+                        <CommentInputBox />
                     </div>
                 </div>
             </div>
