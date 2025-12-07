@@ -16,6 +16,8 @@ import ConfirmModal from "../commons/modals/ConfirmModal.jsx";
 import { toast } from "react-toastify";
 import usePageService from "../commons/hooks/useNavigationService.js";
 import baseURL from "../config/apiBaseUrl.js";
+import CommentList from "../components/comment/CommentList.jsx";
+import CommentInputBox from "../components/comment/CommentInputBox.jsx";
 
 const renderer = new marked.Renderer();
 
@@ -159,6 +161,10 @@ export default function PostDetail() {
                             className="toast-viewer-content"
                             dangerouslySetInnerHTML={{__html: htmlContent}}
                         />
+                    </div>
+                    <div>
+                        <CommentList postId={postInfo.id} />
+                        <CommentInputBox postId={postInfo.id} />
                     </div>
                 </div>
             </div>
