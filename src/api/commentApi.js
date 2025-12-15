@@ -8,8 +8,11 @@ export default function commentApi(){
     };
 
     const commentList = async (postId) => {
-        const config = getAuthHeaders();
-        return await request("get", "/api/admin/comments", postId, config);
+        const config = {
+            ...getAuthHeaders(),
+            params: { postId }
+        };
+        return await request("get", "/api/admin/comments", null, config);
     }
 
     const createComment = async (commentData) => {
