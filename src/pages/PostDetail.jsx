@@ -61,6 +61,7 @@ export default function PostDetail() {
     const [postInfo, setPostInfo] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
+    const [refreshComments, setRefreshComments] = useState(0);
     const post = postApi();
     const pageService = usePageService();
 
@@ -122,6 +123,11 @@ export default function PostDetail() {
         );
     }
 
+    // 댓글 새로고침 함수 추가
+    const handleCommentAdded = () => {
+        setRefreshComments(prev => prev + 1);
+    };
+
     return (
         <>
             <div className="min-h-screen to-slate-100 py-10 px-4">
@@ -163,8 +169,8 @@ export default function PostDetail() {
                         />
                     </div>
                     <div>
-                        <CommentList postId={postInfo.id} />
-                        <CommentInputBox postId={postInfo.id} />
+                        <CommentList postId={postInfo.id} refreshTrigger={refreshComments} />
+                        <CommentInputBox postId={postInfo.id} onCommentAdded={handleCommentAdded} />
                     </div>
                 </div>
             </div>

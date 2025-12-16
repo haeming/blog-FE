@@ -25,14 +25,15 @@ export default function CommentInputBox({ postId, parentId = null, onCommentAdde
             // 입력 필드 초기화
             setContent("");
 
+            // 부모 컴포넌트에 댓글 추가 알림
+            if (onCommentAdded) {
+                onCommentAdded();
+            }
         } catch (error){
             console.error("댓글 작성 오류", error)
         }
 
-        // 부모 컴포넌트에 댓글 추가 알림
-        if (onCommentAdded) {
-            onCommentAdded();
-        }
+
     };
 
     const handleCancel = () => {
