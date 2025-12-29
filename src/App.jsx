@@ -6,7 +6,7 @@ import {ToastContainer} from "react-toastify";
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { adminApi } from './api/adminApi.js';
-import { loginAction } from './store/authSlice.js';
+import { loginAction, logoutAction } from './store/authSlice.js';
 
 function App() {
 
@@ -15,22 +15,27 @@ function App() {
   useEffect(() => {
     const checkToken = async () => {
       const token = localStorage.getItem("token");
-        if(token){
-          try {
-            const res = await adminApi.verifyToken();
-            const accountName = res.accountName;
-            dispatch(loginAction({accountName, token}));
-          } catch (err){
-            console.error("토큰 검증 실패", err);
-            localStorage.removeItem("token");
-            localStorage.removeItem("accountName");
-          }
+      if(!token){
+        dispatch(logoutAction());
+        return
+      }
 
-        }
-    }
+      try {
+        const res = await adminApi.verifyToken();
+        const accountName = res.accountName;
+
+        dispatch(loginAction({accountName, token}));
+      } catch (err){
+        console.error("토큰 검증 실패", err);
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("accountName");
+        dispatch(logoutAction()); // 실패 시에도 로그아웃 처리
+      }
+    };
+
     checkToken();
-
-  }, [dispatch])
+  }, [dispatch]);
 
   return (
     <>
