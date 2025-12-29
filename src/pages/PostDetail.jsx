@@ -128,6 +128,11 @@ export default function PostDetail() {
         setRefreshComments(prev => prev + 1);
     };
 
+    // 게시글 수정 페이지 이동
+    const handleEdit = () => {
+        pageService.goToPostEdit(id);
+    }
+
     return (
         <>
             <div className="min-h-screen to-slate-100 py-10 px-4">
@@ -149,7 +154,7 @@ export default function PostDetail() {
                             )}
                         </div>
                         <div>
-                            <button className="mx-1 cursor-pointer hover:text-slate-800">
+                            <button className="mx-1 cursor-pointer hover:text-slate-800" onClick={handleEdit}>
                                 수정
                             </button>
                             <button

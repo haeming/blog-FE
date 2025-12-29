@@ -31,5 +31,9 @@ export default function usePageService(){
         navigate(`/post/${id}`)
     }
 
-    return { goToBack, goToBackTwoSteps, goToHome, goToCategory, goToPostList, goToPostWrite, goToPostDetail };
+    const goToPostEdit = (id) => {
+        navigate(`/post/${id}/edit`)
+    }
+
+    return { goToBack, goToBackTwoSteps, goToHome, goToCategory, goToPostList, goToPostWrite, goToPostDetail, goToPostEdit };
 }
