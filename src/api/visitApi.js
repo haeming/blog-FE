@@ -4,4 +4,8 @@ export const visitApi = {
     ping: async () => {
         return await request("post", "/api/visits/ping", null, null);
     },
+
+    count: async() => {
+        return await request("get", "/api/visits/today", null, null);
+    }
 };

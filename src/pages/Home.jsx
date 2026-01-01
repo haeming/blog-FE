@@ -3,9 +3,11 @@ import { Grape, FolderClosed, MessageSquareMore, PencilLine, Newspaper, MessageS
 import { useEffect, useState } from "react";
 import commentApi from "../api/commentApi.js";
 import postApi from "../api/postApi.js";
+import {visitApi} from "../api/visitApi.js";
 
 export default function Home(){
 
+    const [visitCount, setVisitCount] = useState(0);
     const [postCount, setPostCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
     const pageService = usePageService();
@@ -30,9 +32,19 @@ export default function Home(){
         }
     }
 
+    const getVisitCount = async() => {
+        try {
+            const getVisitCount = await visitApi.count();
+            setVisitCount(getVisitCount);
+        } catch (error){
+            console.error("방문자 수 불러오기 에러", error);
+        }
+    }
+
     useEffect(() => {
         getPostCount();
         getCommentCount();
+        getVisitCount();
     },[])
 
     return(
@@ -78,7 +90,7 @@ export default function Home(){
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-neutral-500 text-sm font-medium">방문자</p>
-                                    <p className="text-3xl font-bold mt-2 text-neutral-900">1.2k</p>
+                                    <p className="text-3xl font-bold mt-2 text-neutral-900">{(visitCount ?? 0).toLocaleString()}</p>
                                 </div>
                                 <UsersRound className="w-10 h-10 text-custom-purple" />
                             </div>
