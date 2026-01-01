@@ -7,11 +7,33 @@ import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { adminApi } from './api/adminApi.js';
 import { loginAction, logoutAction } from './store/authSlice.js';
+import {visitApi} from "./api/visitApi.js";
 
 function App() {
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    const pingVisit = async () => {
+      const now = new Date();
+      const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+      const today = kst.toISOString().slice(0, 10); // yyyy-mm-dd
+
+      const key = "uv_ping_date";
+      if(sessionStorage.getItem(key) === today) return;
+      sessionStorage.setItem(key, today);
+
+      try{
+        await visitApi.ping();
+      } catch (error){
+        console.debug("visit ping failed", error);
+      }
+    }
+
+    pingVisit();
+  }, []);
+
+  // 토큰 검증
   useEffect(() => {
     const checkToken = async () => {
       const token = localStorage.getItem("token");
