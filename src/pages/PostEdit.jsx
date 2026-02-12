@@ -25,8 +25,8 @@ export default function PostEdit() {
         load();
     }, [id]);
 
-    const handleUpdate = async ({ title, content }) => {
-        const res = await post.updatePostInfo(id, { title, content });
+    const handleUpdate = async ({ title, content, categoryId }) => {
+        const res = await post.updatePostInfo(id, { title, content, categoryId });
         return res.data?.data ?? res;
     };
 
@@ -34,6 +34,7 @@ export default function PostEdit() {
 
     return (
         <PostEditor
+            key={id}
             mode="edit"
             initialData={initialData}
             onSubmit={handleUpdate}
