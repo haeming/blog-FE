@@ -50,9 +50,9 @@ export default function postApi(){
         return await request("post", "/api/admin/posts/temp-image", formData, config);
     };
 
-    const updatePostInfo = async (id, {title, content}) => {
+    const updatePostInfo = async (id, {title, content, categoryId}) => {
         const config = getAuthHeaders();
-        return await request("patch", `/api/admin/posts/${id}/info`, {title, content}, config);
+        return await request("patch", `/api/admin/posts/${id}/info`, {title, content, categoryId}, config);
     }
 
     return { postCount, createPost, getPost, getPosts, deletePost, uploadTempImages, updatePostInfo };
