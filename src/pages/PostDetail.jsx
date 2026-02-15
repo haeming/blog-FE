@@ -21,40 +21,141 @@ import CommentInputBox from "../components/comment/CommentInputBox.jsx";
 
 const renderer = new marked.Renderer();
 
-renderer.code = function({ text, lang, escaped }) {
-    console.log('Code block - lang:', lang, 'text length:', text?.length);
-    
-    const safeCode = text || '';
-    
+renderer.code = function ({ text, lang }) {
+    const safeCode = text || "";
+
     const languageMap = {
-        'js': 'javascript',
-        'jsx': 'jsx',
-        'ts': 'typescript',
-        'tsx': 'tsx',
-        'py': 'python',
-        'sh': 'bash',
-        'html': 'markup'
+        js: "javascript",
+        jsx: "jsx",
+        ts: "typescript",
+        tsx: "tsx",
+        py: "python",
+        sh: "bash",
+        html: "markup",
     };
-    
-    const normalizedLang = lang ? (languageMap[lang.toLowerCase()] || lang.toLowerCase()) : 'javascript';
-    
-    console.log('Using language:', normalizedLang);
-    
+
+    const normalizedLang = lang
+        ? languageMap[lang.toLowerCase()] || lang.toLowerCase()
+        : "javascript";
+
     const grammar = Prism.languages[normalizedLang] || Prism.languages.java;
-    
+
     try {
         const html = Prism.highlight(safeCode, grammar, normalizedLang);
         return `<pre class="language-${normalizedLang}"><code class="language-${normalizedLang}">${html}</code></pre>`;
     } catch (error) {
         console.error(`Error highlighting ${normalizedLang}:`, error);
-        return `<pre class="language-${normalizedLang}"><code class="language-${normalizedLang}">${DOMPurify.sanitize(safeCode)}</code></pre>`;
+        return `<pre class="language-${normalizedLang}"><code class="language-${normalizedLang}">${DOMPurify.sanitize(
+            safeCode
+        )}</code></pre>`;
     }
 };
 
+// breaks를 끕니다(중복 줄바꿈 방지)
 marked.setOptions({
     renderer,
-    breaks: true,
+    breaks: false,
 });
+
+const normalizeLineBreaksExactly = (md) => {
+    // 1. 코드 블록을 임시로 추출
+    const codeBlocks = [];
+    let content = md.replace(/(```[\s\S]*?```)/g, (match) => {
+        codeBlocks.push(match);
+        return `___CODE_BLOCK_${codeBlocks.length - 1}___`;
+    });
+
+    // 2. 일반 텍스트만 처리
+    const lines = content.split("\n");
+    const out = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        // 플레이스홀더는 그대로 유지
+        if (trimmed.startsWith("___CODE_BLOCK_")) {
+            out.push(line);
+            continue;
+        }
+
+        // 마크다운 구문은 절대 건드리지 않음
+        // 인용구 (>), 리스트 (*, -, +, 1.), 제목 (#), 수평선 (---)
+        if (
+            trimmed.startsWith(">") ||
+            trimmed.startsWith("*") ||
+            trimmed.startsWith("-") ||
+            trimmed.startsWith("+") ||
+            /^\d+\./.test(trimmed) || // 1. 2. 3. 등
+            trimmed.startsWith("#") ||
+            trimmed === "---" ||
+            trimmed === "***" ||
+            trimmed === "___"
+        ) {
+            out.push(line);
+            continue;
+        }
+
+        // 빈 줄 처리
+        if (trimmed === "") {
+            const nextLine = i < lines.length - 1 ? lines[i + 1].trim() : "";
+            const prevLine = i > 0 ? lines[i - 1].trim() : "";
+
+            // 마크다운 구조 주변의 빈 줄은 유지
+            if (
+                nextLine.startsWith("___CODE_BLOCK_") ||
+                nextLine.startsWith(">") ||
+                nextLine.startsWith("*") ||
+                nextLine.startsWith("-") ||
+                nextLine.startsWith("+") ||
+                /^\d+\./.test(nextLine) ||
+                nextLine.startsWith("#") ||
+                nextLine === "---" ||
+                prevLine.startsWith("___CODE_BLOCK_") ||
+                prevLine.startsWith(">") ||
+                prevLine.startsWith("#") ||
+                prevLine === "---"
+            ) {
+                out.push("");
+            } else {
+                // 일반 텍스트 사이의 빈 줄만 <br>로 변환
+                out.push("<br>");
+            }
+            continue;
+        }
+
+        // 일반 줄
+        if (i < lines.length - 1) {
+            const nextLine = lines[i + 1].trim();
+            // 다음 줄이 빈 줄이거나 마크다운 구문이면 hard break 추가 안 함
+            if (
+                nextLine === "" ||
+                nextLine.startsWith(">") ||
+                nextLine.startsWith("*") ||
+                nextLine.startsWith("-") ||
+                nextLine.startsWith("+") ||
+                /^\d+\./.test(nextLine) ||
+                nextLine.startsWith("#") ||
+                nextLine.startsWith("___CODE_BLOCK_")
+            ) {
+                out.push(line);
+            } else {
+                out.push(line + "  ");
+            }
+        } else {
+            out.push(line);
+        }
+    }
+
+    let result = out.join("\n");
+
+    // 3. 코드 블록 복원
+    codeBlocks.forEach((block, index) => {
+        result = result.replace(`___CODE_BLOCK_${index}___`, block);
+    });
+
+    return result;
+};
 
 export default function PostDetail() {
     const { id } = useParams();
@@ -80,6 +181,7 @@ export default function PostDetail() {
     const htmlContent = useMemo(() => {
         if (!postInfo?.content) return "";
 
+        // 이미지 상대경로 → 절대경로 변환
         let content = postInfo.content.replace(
             /!\[([^\]]*)\]\((\/uploadFiles\/[^\)]+)\)/g,
             (match, alt, path) => {
@@ -89,8 +191,13 @@ export default function PostDetail() {
             }
         );
 
+        // ✅ 엔터/빈줄을 정확히 반영하도록 정규화
+        content = normalizeLineBreaksExactly(content);
+
         const rawHtml = marked.parse(content);
-        return DOMPurify.sanitize(rawHtml);
+
+        // ✅ br 허용을 명시(환경에 따라 제거 방지)
+        return DOMPurify.sanitize(rawHtml, { ADD_TAGS: ["br"] });
     }, [postInfo]);
 
     useLayoutEffect(() => {
@@ -123,15 +230,13 @@ export default function PostDetail() {
         );
     }
 
-    // 댓글 새로고침 함수 추가
     const handleCommentAdded = () => {
-        setRefreshComments(prev => prev + 1);
+        setRefreshComments((prev) => prev + 1);
     };
 
-    // 게시글 수정 페이지 이동
     const handleEdit = () => {
         pageService.goToPostEdit(id);
-    }
+    };
 
     return (
         <>
@@ -170,9 +275,10 @@ export default function PostDetail() {
                         <div
                             key={postInfo?.id}
                             className="toast-viewer-content"
-                            dangerouslySetInnerHTML={{__html: htmlContent}}
+                            dangerouslySetInnerHTML={{ __html: htmlContent }}
                         />
                     </div>
+
                     <div>
                         <CommentList postId={postInfo.id} refreshTrigger={refreshComments} />
                         <CommentInputBox postId={postInfo.id} onCommentAdded={handleCommentAdded} />
