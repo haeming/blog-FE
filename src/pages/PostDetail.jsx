@@ -51,57 +51,110 @@ renderer.code = function ({ text, lang }) {
     }
 };
 
-// ✅ breaks를 끕니다(중복 줄바꿈 방지)
+// breaks를 끕니다(중복 줄바꿈 방지)
 marked.setOptions({
     renderer,
     breaks: false,
 });
 
-/**
- * ✅ 목표: 사용자가 입력한 엔터 횟수를 그대로 화면에 반영
- * - fenced code block(```) 내부는 건드리지 않습니다.
- * - 일반 텍스트 영역:
- *   - "한 줄 줄바꿈"은 Markdown hard break(라인 끝 공백 2칸)로 강제
- *   - "빈 줄"은 <br /> 라인을 삽입하여 정확히 빈 줄 개수 유지
- */
 const normalizeLineBreaksExactly = (md) => {
-    const lines = md.split("\n");
-    let inFence = false;
+    // 1. 코드 블록을 임시로 추출
+    const codeBlocks = [];
+    let content = md.replace(/(```[\s\S]*?```)/g, (match) => {
+        codeBlocks.push(match);
+        return `___CODE_BLOCK_${codeBlocks.length - 1}___`;
+    });
+
+    // 2. 일반 텍스트만 처리
+    const lines = content.split("\n");
     const out = [];
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmed = line.trim();
 
-        // code fence 토글
-        if (trimmed.startsWith("```")) {
-            inFence = !inFence;
+        // 플레이스홀더는 그대로 유지
+        if (trimmed.startsWith("___CODE_BLOCK_")) {
             out.push(line);
             continue;
         }
 
-        if (inFence) {
-            // 코드블록 내부는 원문 유지
+        // 마크다운 구문은 절대 건드리지 않음
+        // 인용구 (>), 리스트 (*, -, +, 1.), 제목 (#), 수평선 (---)
+        if (
+            trimmed.startsWith(">") ||
+            trimmed.startsWith("*") ||
+            trimmed.startsWith("-") ||
+            trimmed.startsWith("+") ||
+            /^\d+\./.test(trimmed) || // 1. 2. 3. 등
+            trimmed.startsWith("#") ||
+            trimmed === "---" ||
+            trimmed === "***" ||
+            trimmed === "___"
+        ) {
             out.push(line);
             continue;
         }
 
+        // 빈 줄 처리
         if (trimmed === "") {
-            // 빈 줄은 <br />로 치환 (빈 줄 개수만큼 유지)
-            out.push("<br />");
+            const nextLine = i < lines.length - 1 ? lines[i + 1].trim() : "";
+            const prevLine = i > 0 ? lines[i - 1].trim() : "";
+
+            // 마크다운 구조 주변의 빈 줄은 유지
+            if (
+                nextLine.startsWith("___CODE_BLOCK_") ||
+                nextLine.startsWith(">") ||
+                nextLine.startsWith("*") ||
+                nextLine.startsWith("-") ||
+                nextLine.startsWith("+") ||
+                /^\d+\./.test(nextLine) ||
+                nextLine.startsWith("#") ||
+                nextLine === "---" ||
+                prevLine.startsWith("___CODE_BLOCK_") ||
+                prevLine.startsWith(">") ||
+                prevLine.startsWith("#") ||
+                prevLine === "---"
+            ) {
+                out.push("");
+            } else {
+                // 일반 텍스트 사이의 빈 줄만 <br>로 변환
+                out.push("<br>");
+            }
             continue;
         }
 
-        // 일반 줄: 다음 라인이 존재하면 hard break를 유도하기 위해 끝에 공백 2칸 추가
-        // (마지막 줄은 불필요한 break를 피하려고 그대로 둡니다)
+        // 일반 줄
         if (i < lines.length - 1) {
-            out.push(line + "  ");
+            const nextLine = lines[i + 1].trim();
+            // 다음 줄이 빈 줄이거나 마크다운 구문이면 hard break 추가 안 함
+            if (
+                nextLine === "" ||
+                nextLine.startsWith(">") ||
+                nextLine.startsWith("*") ||
+                nextLine.startsWith("-") ||
+                nextLine.startsWith("+") ||
+                /^\d+\./.test(nextLine) ||
+                nextLine.startsWith("#") ||
+                nextLine.startsWith("___CODE_BLOCK_")
+            ) {
+                out.push(line);
+            } else {
+                out.push(line + "  ");
+            }
         } else {
             out.push(line);
         }
     }
 
-    return out.join("\n");
+    let result = out.join("\n");
+
+    // 3. 코드 블록 복원
+    codeBlocks.forEach((block, index) => {
+        result = result.replace(`___CODE_BLOCK_${index}___`, block);
+    });
+
+    return result;
 };
 
 export default function PostDetail() {
