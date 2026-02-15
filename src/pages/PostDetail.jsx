@@ -21,40 +21,88 @@ import CommentInputBox from "../components/comment/CommentInputBox.jsx";
 
 const renderer = new marked.Renderer();
 
-renderer.code = function({ text, lang, escaped }) {
-    console.log('Code block - lang:', lang, 'text length:', text?.length);
-    
-    const safeCode = text || '';
-    
+renderer.code = function ({ text, lang }) {
+    const safeCode = text || "";
+
     const languageMap = {
-        'js': 'javascript',
-        'jsx': 'jsx',
-        'ts': 'typescript',
-        'tsx': 'tsx',
-        'py': 'python',
-        'sh': 'bash',
-        'html': 'markup'
+        js: "javascript",
+        jsx: "jsx",
+        ts: "typescript",
+        tsx: "tsx",
+        py: "python",
+        sh: "bash",
+        html: "markup",
     };
-    
-    const normalizedLang = lang ? (languageMap[lang.toLowerCase()] || lang.toLowerCase()) : 'javascript';
-    
-    console.log('Using language:', normalizedLang);
-    
+
+    const normalizedLang = lang
+        ? languageMap[lang.toLowerCase()] || lang.toLowerCase()
+        : "javascript";
+
     const grammar = Prism.languages[normalizedLang] || Prism.languages.java;
-    
+
     try {
         const html = Prism.highlight(safeCode, grammar, normalizedLang);
         return `<pre class="language-${normalizedLang}"><code class="language-${normalizedLang}">${html}</code></pre>`;
     } catch (error) {
         console.error(`Error highlighting ${normalizedLang}:`, error);
-        return `<pre class="language-${normalizedLang}"><code class="language-${normalizedLang}">${DOMPurify.sanitize(safeCode)}</code></pre>`;
+        return `<pre class="language-${normalizedLang}"><code class="language-${normalizedLang}">${DOMPurify.sanitize(
+            safeCode
+        )}</code></pre>`;
     }
 };
 
+// ✅ breaks를 끕니다(중복 줄바꿈 방지)
 marked.setOptions({
     renderer,
-    breaks: true,
+    breaks: false,
 });
+
+/**
+ * ✅ 목표: 사용자가 입력한 엔터 횟수를 그대로 화면에 반영
+ * - fenced code block(```) 내부는 건드리지 않습니다.
+ * - 일반 텍스트 영역:
+ *   - "한 줄 줄바꿈"은 Markdown hard break(라인 끝 공백 2칸)로 강제
+ *   - "빈 줄"은 <br /> 라인을 삽입하여 정확히 빈 줄 개수 유지
+ */
+const normalizeLineBreaksExactly = (md) => {
+    const lines = md.split("\n");
+    let inFence = false;
+    const out = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        // code fence 토글
+        if (trimmed.startsWith("```")) {
+            inFence = !inFence;
+            out.push(line);
+            continue;
+        }
+
+        if (inFence) {
+            // 코드블록 내부는 원문 유지
+            out.push(line);
+            continue;
+        }
+
+        if (trimmed === "") {
+            // 빈 줄은 <br />로 치환 (빈 줄 개수만큼 유지)
+            out.push("<br />");
+            continue;
+        }
+
+        // 일반 줄: 다음 라인이 존재하면 hard break를 유도하기 위해 끝에 공백 2칸 추가
+        // (마지막 줄은 불필요한 break를 피하려고 그대로 둡니다)
+        if (i < lines.length - 1) {
+            out.push(line + "  ");
+        } else {
+            out.push(line);
+        }
+    }
+
+    return out.join("\n");
+};
 
 export default function PostDetail() {
     const { id } = useParams();
@@ -80,6 +128,7 @@ export default function PostDetail() {
     const htmlContent = useMemo(() => {
         if (!postInfo?.content) return "";
 
+        // 이미지 상대경로 → 절대경로 변환
         let content = postInfo.content.replace(
             /!\[([^\]]*)\]\((\/uploadFiles\/[^\)]+)\)/g,
             (match, alt, path) => {
@@ -89,8 +138,13 @@ export default function PostDetail() {
             }
         );
 
+        // ✅ 엔터/빈줄을 정확히 반영하도록 정규화
+        content = normalizeLineBreaksExactly(content);
+
         const rawHtml = marked.parse(content);
-        return DOMPurify.sanitize(rawHtml);
+
+        // ✅ br 허용을 명시(환경에 따라 제거 방지)
+        return DOMPurify.sanitize(rawHtml, { ADD_TAGS: ["br"] });
     }, [postInfo]);
 
     useLayoutEffect(() => {
@@ -123,15 +177,13 @@ export default function PostDetail() {
         );
     }
 
-    // 댓글 새로고침 함수 추가
     const handleCommentAdded = () => {
-        setRefreshComments(prev => prev + 1);
+        setRefreshComments((prev) => prev + 1);
     };
 
-    // 게시글 수정 페이지 이동
     const handleEdit = () => {
         pageService.goToPostEdit(id);
-    }
+    };
 
     return (
         <>
@@ -170,9 +222,10 @@ export default function PostDetail() {
                         <div
                             key={postInfo?.id}
                             className="toast-viewer-content"
-                            dangerouslySetInnerHTML={{__html: htmlContent}}
+                            dangerouslySetInnerHTML={{ __html: htmlContent }}
                         />
                     </div>
+
                     <div>
                         <CommentList postId={postInfo.id} refreshTrigger={refreshComments} />
                         <CommentInputBox postId={postInfo.id} onCommentAdded={handleCommentAdded} />
