@@ -34,15 +34,29 @@ export default function CommentList({ postId, refreshTrigger }) {
         return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
     };
 
-    const handleEdit = (commentId) => {
-        console.log("수정:", commentId);
-        // 수정 로직 구현
+    const handleEdit = async (commentId) => {
+        const comment = comments.find(c => c.id === commentId);
+        if (!comment) return;
+
+        const newContent = prompt("댓글 수정", comment.content);
+        if (!newContent || newContent === comment.content) return;
+
+        try {
+            await commentApi.updateComment(commentId, { content: newContent });
+            getCommentList(postId);
+        } catch (error) {
+            console.error("댓글 수정 에러", error);
+        }
     };
 
-    const handleDelete = (commentId) => {
-        if (window.confirm("댓글을 삭제하시겠습니까?")) {
-            console.log("삭제:", commentId);
-            // 삭제 로직 구현
+    const handleDelete = async (commentId) => {
+        if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
+
+        try {
+            await commentApi.deleteComment(commentId);
+            getCommentList(postId);
+        } catch (error) {
+            console.error("댓글 삭제 에러", error);
         }
     };
 
@@ -55,8 +69,12 @@ export default function CommentList({ postId, refreshTrigger }) {
 
         try {
             // 대댓글 등록 API 호출
-            // await commentApi.createReply(parentId, replyContent);
-            console.log("대댓글 등록:", parentId, replyContent);
+            await commentApi.createComment({
+                postId: postId,
+                parentId: parentId,  // 부모 댓글 ID 전달
+                content: replyContent
+            });
+
             setReplyContent("");
             setReplyingTo(null);
             getCommentList(postId);
