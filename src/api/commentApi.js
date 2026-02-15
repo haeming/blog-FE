@@ -20,5 +20,15 @@ export default function commentApi(){
         return await request("post", "/api/admin/comments", commentData, config);
     }
 
-    return { commentCount, commentList, createComment };
+    const updateComment = async (commentId, commentData) => {
+        const config = getAuthHeaders();
+        return await request("put", `/api/admin/comments/${commentId}`, commentData, config);
+    }
+
+    const deleteComment = async (commentId) => {
+        const config = getAuthHeaders();
+        return await request("delete", `/api/admin/comments/${commentId}`, null, config);
+    }
+
+    return { commentCount, commentList, createComment, updateComment, deleteComment };
 }
