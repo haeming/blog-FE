@@ -23,6 +23,12 @@
   --color-custom-whiteBlue: #b3d9e6;
   --color-custom-whiteBlue2: #9abbc6;
 
+  --color-custom-mint1: #4ec9b0 !important; /* VS Code 민트 */
+  --color-custom-mint2: #56d9c9 !important; /* 밝은 민트 */
+  --color-custom-mint3: #2dd4bf !important; /* Tailwind 틸(teal) */
+  --color-custom-mint4: #14b8a6 !important; /* 진한 틸 */
+  --color-custom-mint5: #5eead4 !important; /* 연한 민트 */
+
   /* 폰트 사이즈 커스텀 */
   --text-tiny: 0.75rem;
   --text-tiny2: 0.9rem;
@@ -34,4 +40,15 @@
 /* 스크롤바 숨기기 */
 body::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+
+/* =========================================================
+   인용구 텍스트 색상 수정
+   ========================================================= */
+.toast-viewer-content blockquote {
+  color: #1a1a1a !important;
+}
+
+.toast-viewer-content blockquote p {
+  color: #1a1a1a !important;
 }

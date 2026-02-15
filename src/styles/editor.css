@@ -117,24 +117,29 @@
     font-family: inherit !important;
 }
 
-/* 인라인 코드 */
+/* 인라인 코드 - GitHub 스타일 */
 .toast-viewer-content :not(pre) > code {
-    background: #2f2f3a !important;
-    color: #dcdcaa !important;
-    padding: 3px 6px !important;
-    border-radius: 4px !important;
-    font-family: "JetBrains Mono", "Fira Code", monospace !important;
-    font-size: 0.9rem;
+    background: #f6f8fa !important;
+    color: #cf222e !important;
+    padding: 0.2em 0.4em !important;
+    border-radius: 6px !important;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !important;
+    font-size: 85%;
+    font-weight: 400;
 }
 
 /* 인용문 */
 .toast-viewer-content blockquote {
     border-left: 4px solid #7c3aed !important;
     background: rgba(124, 58, 237, 0.08) !important;
-    color: #d4d4d4 !important;
+    color: #838383 !important;
     padding: 0.8em 1.2em !important;
     border-radius: 0 8px 8px 0 !important;
     margin: 1.5em 0 !important;
+}
+
+.toast-viewer-content blockquote p {
+    color: #1a1a1a !important;
 }
 
 /* 헤딩 */
@@ -257,4 +262,67 @@
 .toast-viewer-content pre::-webkit-scrollbar-thumb {
     background-color: #4b4b4b;
     border-radius: 8px;
+}
+
+/* =========================================================
+   추가: 리스트 숫자/불릿 표시 및 GitHub 스타일 인라인 코드
+   ========================================================= */
+
+/* 순서 있는 리스트 (1. 2. 3.) - 숫자 표시 */
+.toast-viewer-content ol {
+    list-style-type: decimal !important;
+    list-style-position: outside !important;
+    padding-left: 2em !important;
+    margin: 1em 0 !important;
+    color: #1a1a1a !important;
+}
+
+.toast-viewer-content ol li {
+    display: list-item !important;
+    color: #1a1a1a !important;
+    margin-bottom: 0.5em;
+    line-height: 1.8;
+}
+
+.toast-viewer-content ol li::marker {
+    color: #a157ff !important;
+    font-weight: 600;
+}
+
+/* 순서 없는 리스트 (불릿) */
+.toast-viewer-content ul {
+    list-style-type: disc !important;
+    list-style-position: outside !important;
+    padding-left: 2em !important;
+    margin: 1em 0 !important;
+    color: #a157ff !important;
+}
+
+.toast-viewer-content ul li {
+    display: list-item !important;
+    color: #1a1a1a !important;
+    margin-bottom: 0.5em;
+    line-height: 1.8;
+}
+
+.toast-viewer-content ul li::marker {
+    color: #a157ff !important;
+}
+
+/* GitHub 스타일 인라인 코드 (`` 백틱) - 옅은 회색 배경에 빨간 글씨 */
+.toast-viewer-content p code:not(pre code),
+.toast-viewer-content li code:not(pre code),
+.toast-viewer-content td code:not(pre code),
+.toast-viewer-content h1 code:not(pre code),
+.toast-viewer-content h2 code:not(pre code),
+.toast-viewer-content h3 code:not(pre code),
+.toast-viewer-content blockquote code:not(pre code) {
+    background-color: rgba(175, 184, 193, 0.2) !important;
+    color: #cf222e !important;
+    padding: 0.2em 0.4em !important;
+    margin: 0;
+    font-size: 85%;
+    white-space: break-spaces;
+    border-radius: 6px !important;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !important;
 }
