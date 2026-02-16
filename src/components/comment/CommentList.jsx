@@ -1,5 +1,6 @@
 import useComment from "../../api/commentApi.js";
 import { useEffect, useState } from "react";
+import { formatRelativeTime } from "../../commons/utils/dateFormat.js";
 
 export default function CommentList({ postId, refreshTrigger }) {
     const [comments, setComments] = useState([]);
@@ -12,29 +13,40 @@ export default function CommentList({ postId, refreshTrigger }) {
     const getCommentList = async (postId) => {
         try {
             const response = await commentApi.commentList(postId);
-            setComments(response || []);
-            console.log(response);
+
+            const organizedComments = organizeComments(response || []);
+            setComments(organizedComments);
+            console.log(organizedComments);
         } catch (error) {
             console.error("댓글 목록 불러오기 에러", error);
         }
     }
 
+    const organizeComments = (commentList) => {
+        const result = [];
+
+        // 1. 원댓글만 먼저 추가
+        commentList.forEach(comment => {
+            if (comment.parentId === null) {
+                result.push(comment);
+            }
+        });
+
+        // 2. 각 원댓글 아래에 대댓글 추가
+        const finalResult = [];
+        result.forEach(parent => {
+            finalResult.push(parent);
+            const replies = commentList.filter(c => c.parentId === parent.id);
+            finalResult.push(...replies);
+        });
+
+        return finalResult;
+    };
+
     useEffect(() => {
         if (!postId) return;
         getCommentList(postId);
     }, [postId, refreshTrigger]);
-
-    const formatTime = (timestamp) => {
-        if (!timestamp) return '';
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diff = Math.floor((now - date) / 1000);
-
-        if (diff < 60) return '방금 전';
-        if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
-        if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
-        return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
-    };
 
     const handleEdit = (commentId, currentContent) => {
         setEditingId(commentId);
@@ -99,171 +111,166 @@ export default function CommentList({ postId, refreshTrigger }) {
     };
 
     const renderComment = (comment) => {
-        // ✅ parentId가 있으면 대댓글
         const isReply = comment.parentId !== null;
 
         return (
             <div
                 key={comment.id}
-                className={`flex gap-3 px-2 group hover:bg-gray-50 rounded-lg transition-colors py-2 
-                    ${isReply ? 'ml-12 border-l-2 border-blue-300 pl-4 bg-blue-50/30' : ''}`}
+                className={`${isReply ? 'ml-16' : ''}`}
             >
-                {/* 프로필 이미지 영역 */}
-                <div className="flex-shrink-0">
-                    <div className={`${isReply ? 'w-8 h-8 text-xs' : 'w-10 h-10 text-sm'} rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold`}>
-                        {(comment.nickname || "작성자")[0].toUpperCase()}
+                <div className={`flex gap-3 p-4 rounded-lg transition-all duration-200
+                    ${isReply ? 'bg-gray-50/50 hover:bg-gray-100/50' : 'bg-white hover:bg-gray-50'}`}
+                >
+                    {/* 프로필 이미지 */}
+                    <div className="flex-shrink-0">
+                        <div className={`${isReply ? 'w-9 h-9' : 'w-11 h-11'} rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold shadow-sm`}>
+                            <span className={isReply ? 'text-sm' : 'text-base'}>
+                                {(comment.nickname || "작성자")[0].toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* 댓글 내용 */}
+                    <div className="flex-1 min-w-0">
+                        {/* 헤더 */}
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="font-semibold text-gray-900">
+                                {comment.nickname || "작성자"}
+                            </span>
+                            {isReply && (
+                                <span className="px-2 py-0.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded">
+                                    답글
+                                </span>
+                            )}
+                            <span className="text-sm text-gray-400">
+                                {formatRelativeTime(comment.createdAt)}
+                            </span>
+                        </div>
+
+                        {/* 수정 모드 */}
+                        {editingId === comment.id ? (
+                            <div className="space-y-3">
+                                <textarea
+                                    value={editContent}
+                                    onChange={(e) => setEditContent(e.target.value)}
+                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                                    rows="3"
+                                    autoFocus
+                                />
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => submitEdit(comment.id)}
+                                        className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                    >
+                                        저장
+                                    </button>
+                                    <button
+                                        onClick={cancelEdit}
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                    >
+                                        취소
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                {/* 댓글 내용 */}
+                                <p className="text-gray-700 leading-relaxed mb-3 whitespace-pre-wrap">
+                                    {comment.content}
+                                </p>
+
+                                {/* 액션 버튼 */}
+                                <div className="flex items-center gap-4 text-sm">
+                                    {!isReply && (
+                                        <button
+                                            onClick={() => handleReply(comment.id)}
+                                            className="text-gray-500 hover:text-indigo-600 font-medium transition-colors"
+                                        >
+                                            답글
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => handleEdit(comment.id, comment.content)}
+                                        className="text-gray-500 hover:text-indigo-600 transition-colors"
+                                    >
+                                        수정
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(comment.id)}
+                                        className="text-gray-500 hover:text-red-600 transition-colors"
+                                    >
+                                        삭제
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
 
-                {/* 메시지 영역 */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2 mb-1">
-                        <span className="font-semibold text-gray-900 text-sm">
-                            {comment.nickname || "작성자"}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                            {formatTime(comment.createdAt || comment.timestamp)}
-                        </span>
-                        {/* ✅ 대댓글 뱃지 */}
-                        {isReply && (
-                            <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">
-                                답글
-                            </span>
-                        )}
-                    </div>
-
-                    {/* 수정 모드 */}
-                    {editingId === comment.id ? (
-                        <div className="space-y-2">
+                {/* 대댓글 입력 폼 */}
+                {replyingTo === comment.id && (
+                    <div className="mt-3 ml-16">
+                        <div className="bg-indigo-50/50 border border-indigo-100 rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                </svg>
+                                <span className="text-sm font-medium text-indigo-700">
+                                    {comment.nickname}님에게 답글
+                                </span>
+                            </div>
                             <textarea
-                                value={editContent}
-                                onChange={(e) => setEditContent(e.target.value)}
-                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                value={replyContent}
+                                onChange={(e) => setReplyContent(e.target.value)}
+                                placeholder="답글을 입력하세요..."
+                                className="w-full px-4 py-3 text-sm border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none bg-white"
                                 rows="3"
                                 autoFocus
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        submitReply(comment.id);
+                                    }
+                                }}
                             />
-                            <div className="flex gap-2">
+                            <div className="flex justify-end gap-2 mt-3">
                                 <button
-                                    onClick={() => submitEdit(comment.id)}
-                                    className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                >
-                                    저장
-                                </button>
-                                <button
-                                    onClick={cancelEdit}
-                                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                                    onClick={() => {
+                                        setReplyingTo(null);
+                                        setReplyContent("");
+                                    }}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                                 >
                                     취소
                                 </button>
+                                <button
+                                    onClick={() => submitReply(comment.id)}
+                                    className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                >
+                                    답글 등록
+                                </button>
                             </div>
                         </div>
-                    ) : (
-                        <>
-                            {/* 말풍선 스타일 */}
-                            <div className={`inline-block ${isReply ? 'bg-white' : 'bg-white'} border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm`}>
-                                <p className="text-gray-800 text-sm leading-relaxed break-words">
-                                    {comment.content}
-                                </p>
-                            </div>
-
-                            {/* 액션 버튼들 */}
-                            <div className="flex gap-3 mt-1.5 text-xs text-gray-500">
-                                {/* ✅ 대댓글에는 답글 버튼 안 보임 */}
-                                {!isReply && (
-                                    <button
-                                        onClick={() => handleReply(comment.id)}
-                                        className="hover:text-blue-600"
-                                    >
-                                        답글
-                                    </button>
-                                )}
-                                <button
-                                    onClick={() => handleEdit(comment.id, comment.content)}
-                                    className="hover:text-blue-600"
-                                >
-                                    수정
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(comment.id)}
-                                    className="hover:text-red-600"
-                                >
-                                    삭제
-                                </button>
-                            </div>
-                        </>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         );
     };
 
     return (
-        <div className="space-y-4 py-4">
+        <div className="space-y-2 py-6">
             {comments.length === 0 ? (
-                <div className="text-center py-12">
-                    <div className="inline-block p-4 bg-gray-50 rounded-full mb-3">
-                        <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-16">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                     </div>
-                    <p className="text-gray-400 text-sm">등록된 댓글이 없습니다.</p>
+                    <p className="text-gray-500">등록된 댓글이 없습니다.</p>
                 </div>
             ) : (
-                <div className="space-y-3">
-                    {comments.map((comment) => (
-                        <div key={comment.id}>
-                            {renderComment(comment)}
-
-                            {/* ✅ 대댓글 입력 폼 */}
-                            {replyingTo === comment.id && (
-                                <div className="ml-12 mt-3 border-l-2 border-blue-400 pl-4">
-                                    <div className="bg-blue-50 rounded-lg p-3 space-y-2">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                                            </svg>
-                                            <span className="text-xs text-blue-600 font-semibold">
-                                                {comment.nickname}님에게 답글 작성
-                                            </span>
-                                        </div>
-                                        <textarea
-                                            value={replyContent}
-                                            onChange={(e) => setReplyContent(e.target.value)}
-                                            placeholder="답글을 입력하세요..."
-                                            className="w-full px-3 py-2 text-sm border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white"
-                                            rows="3"
-                                            autoFocus
-                                            onKeyPress={(e) => {
-                                                if (e.key === 'Enter' && !e.shiftKey) {
-                                                    e.preventDefault();
-                                                    submitReply(comment.id);
-                                                }
-                                            }}
-                                        />
-                                        <div className="flex justify-end gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setReplyingTo(null);
-                                                    setReplyContent("");
-                                                }}
-                                                className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
-                                            >
-                                                취소
-                                            </button>
-                                            <button
-                                                onClick={() => submitReply(comment.id)}
-                                                className="px-3 py-1.5 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                            >
-                                                답글 등록
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* ✅ 대댓글 렌더링 제거 (replies 배열 사용 안 함) */}
-                        </div>
-                    ))}
+                <div className="space-y-2">
+                    {comments.map((comment) => renderComment(comment))}
                 </div>
             )}
         </div>
