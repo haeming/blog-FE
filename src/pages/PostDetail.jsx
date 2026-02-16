@@ -274,7 +274,7 @@ export default function PostDetail() {
                     <div className="toast-viewer border-y border-gray-300 py-10">
                         <div
                             key={postInfo?.id}
-                            className="toast-viewer-content"
+                            className="toast-viewer-content post-detail-viewer-content"
                             dangerouslySetInnerHTML={{ __html: htmlContent }}
                         />
                     </div>
