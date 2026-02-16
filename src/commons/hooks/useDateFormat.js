@@ -1,20 +1,10 @@
-export default function useDateFormat(){
-    const formatDateTime = (dateString) => {
-        if(!dateString){
-            return "";
-        }
+import { formatDateTime, formatDate, formatTime, formatRelativeTime } from '../utils/dateFormat.js';
 
-        const formatted = new Date(dateString)
-            .toLocaleString("ko-KR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-            }).replace(/-/g, '.');
-
-        return formatted;
+export default function useDateFormat() {
+    return {
+        formatDateTime,
+        formatDate,
+        formatTime,
+        formatRelativeTime
     };
-
-    return { formatDateTime };
 }

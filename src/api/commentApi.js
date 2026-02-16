@@ -22,7 +22,7 @@ export default function commentApi(){
 
     const updateComment = async (commentId, commentData) => {
         const config = getAuthHeaders();
-        return await request("put", `/api/admin/comments/${commentId}`, commentData, config);
+        return await request("patch", `/api/admin/comments/${commentId}`, commentData, config);
     }
 
     const deleteComment = async (commentId) => {
