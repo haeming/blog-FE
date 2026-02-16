@@ -43,6 +43,33 @@ export default function CommentList({ postId, refreshTrigger }) {
         return finalResult;
     };
 
+    const linkifyText = (text) => {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const parts = text.split(urlRegex);
+
+        return (
+            <>
+                {parts.map((part, index) => {
+                    if (part.match(urlRegex)) {
+                        return (
+                    <a
+                        key={index}
+                        href={part}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#4f46e5', textDecoration: 'underline' }}
+                        className="text-indigo-600 hover:text-indigo-800 underline hover:underline-offset-2 transition-colors !important"
+                    >
+                        {part}
+                    </a>
+                    );
+                    }
+                    return <span key={index}>{part}</span>
+                })}
+            </>
+        );
+    };
+
     useEffect(() => {
         if (!postId) return;
         getCommentList(postId);
@@ -160,13 +187,13 @@ export default function CommentList({ postId, refreshTrigger }) {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => submitEdit(comment.id)}
-                                        className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                        className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
                                     >
                                         저장
                                     </button>
                                     <button
                                         onClick={cancelEdit}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
                                     >
                                         취소
                                     </button>
@@ -174,30 +201,30 @@ export default function CommentList({ postId, refreshTrigger }) {
                             </div>
                         ) : (
                             <>
-                                {/* 댓글 내용 */}
-                                <p className="text-gray-700 leading-relaxed mb-3 whitespace-pre-wrap">
-                                    {comment.content}
-                                </p>
+                                {/* 댓글 내용 - 링크 파싱 적용 */}
+                                <div className="text-gray-700 leading-relaxed mb-3 whitespace-pre-wrap break-words">
+                                    {linkifyText(comment.content)}
+                                </div>
 
                                 {/* 액션 버튼 */}
                                 <div className="flex items-center gap-4 text-sm">
                                     {!isReply && (
                                         <button
                                             onClick={() => handleReply(comment.id)}
-                                            className="text-gray-500 hover:text-indigo-600 font-medium transition-colors"
+                                            className="text-gray-500 hover:text-indigo-600 font-medium transition-colors cursor-pointer"
                                         >
                                             답글
                                         </button>
                                     )}
                                     <button
                                         onClick={() => handleEdit(comment.id, comment.content)}
-                                        className="text-gray-500 hover:text-indigo-600 transition-colors"
+                                        className="text-gray-500 hover:text-indigo-600 transition-colors cursor-pointer"
                                     >
                                         수정
                                     </button>
                                     <button
                                         onClick={() => handleDelete(comment.id)}
-                                        className="text-gray-500 hover:text-red-600 transition-colors"
+                                        className="text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
                                     >
                                         삭제
                                     </button>
@@ -239,13 +266,13 @@ export default function CommentList({ postId, refreshTrigger }) {
                                         setReplyingTo(null);
                                         setReplyContent("");
                                     }}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                                 >
                                     취소
                                 </button>
                                 <button
                                     onClick={() => submitReply(comment.id)}
-                                    className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                    className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
                                 >
                                     답글 등록
                                 </button>
