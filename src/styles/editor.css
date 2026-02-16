@@ -202,6 +202,19 @@
     color: #e0e0e0;
 }
 
+/* 게시글 내 링크 스타일 */
+.post-detail-viewer-content a {
+    color: #4f46e5 !important;
+    text-decoration: underline !important;
+    cursor: pointer;
+}
+
+/* 게시글 내 링크 스타일, 마우스 오버 */
+.post-detail-viewer-content a:hover {
+    color: #4338ca !important;
+    text-decoration-thickness: 2px !important;
+}
+
 /* =========================================================
     Prism Token 색상 - VS Code / IntelliJ 스타일 혼합
    ========================================================= */
