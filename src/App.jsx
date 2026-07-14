@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { adminApi } from './api/adminApi.js';
 import { loginAction, logoutAction } from './store/authSlice.js';
 import {visitApi} from "./api/visitApi.js";
+import { AUTH_TOKEN_KEY, ACCOUNT_NAME_KEY } from './commons/utils/authStorageKeys.js';
 
 function App() {
 
@@ -36,7 +37,7 @@ function App() {
   // 토큰 검증
   useEffect(() => {
     const checkToken = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
       if(!token){
         dispatch(logoutAction());
         return
@@ -50,8 +51,8 @@ function App() {
       } catch (err){
         console.error("토큰 검증 실패", err);
 
-        localStorage.removeItem("token");
-        localStorage.removeItem("accountName");
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(ACCOUNT_NAME_KEY);
         dispatch(logoutAction()); // 실패 시에도 로그아웃 처리
       }
     };

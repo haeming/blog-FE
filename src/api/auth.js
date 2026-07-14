@@ -2,6 +2,7 @@ import axios from "axios";
 import baseURL from "../config/apiBaseUrl";
 import {loginAction, logoutAction} from "../store/authSlice";
 import {toast} from "react-toastify";
+import { AUTH_TOKEN_KEY, ACCOUNT_NAME_KEY } from "../commons/utils/authStorageKeys.js";
 
 export const login = ({ accountName, password }) => async(dispatch) => {
     try {
@@ -10,8 +11,8 @@ export const login = ({ accountName, password }) => async(dispatch) => {
             password
         })
         const data = response.data;
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("accountName", data.accountName);
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+        localStorage.setItem(ACCOUNT_NAME_KEY, data.accountName);
         dispatch(loginAction(data));
         toast.success("환영합니다!");
     } catch (error){
@@ -28,8 +29,8 @@ export const login = ({ accountName, password }) => async(dispatch) => {
 
 export const logout = () => (dispatch) => {
     try{
-        localStorage.removeItem("token");
-        localStorage.removeItem("accountName");
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(ACCOUNT_NAME_KEY);
         dispatch(logoutAction());
     } catch (error){
         console.error("logout error:", error);

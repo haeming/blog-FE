@@ -21,7 +21,6 @@ export default function LoginPage() {
     };
 
     const handleSubmit = () => {
-        console.log('로그인 시도:', formData);
         dispatch(login(formData));
     };
 
