@@ -21,10 +21,10 @@ export default function postApi(){
     const createPost = async(postData, files) => {
         const config = getAuthHeaders();
         const formData = new FormData();
-        const { title, content, categoryId } = postData;
+        const { title, content, categoryId, isPublic } = postData;
         formData.append(
             "data",
-            new Blob([JSON.stringify({ title, content, categoryId })], { type: "application/json" })
+            new Blob([JSON.stringify({ title, content, categoryId, isPublic })], { type: "application/json" })
         );
 
         if(files && files.length > 0){
@@ -50,9 +50,9 @@ export default function postApi(){
         return await request("post", "/api/admin/posts/temp-image", formData, config);
     };
 
-    const updatePostInfo = async (id, {title, content, categoryId}) => {
+    const updatePostInfo = async (id, {title, content, categoryId, isPublic}) => {
         const config = getAuthHeaders();
-        return await request("patch", `/api/admin/posts/${id}/info`, {title, content, categoryId}, config);
+        return await request("patch", `/api/admin/posts/${id}/info`, {title, content, categoryId, isPublic}, config);
     }
 
     return { postCount, createPost, getPost, getPosts, deletePost, uploadTempImages, updatePostInfo };
