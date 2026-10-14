@@ -29,6 +29,9 @@ export default function PostEditor({
     const [categoryId, setCategoryId] = useState(
         initialData?.categoryId ? String(initialData.categoryId) : ""
     );
+    const [isPublic, setIsPublic] = useState(
+        initialData?.isPublic ?? "Y"
+    );
 
     const [categoryList, setCategoryList] = useState([]);
     const [files, setFiles] = useState([]); // { blobUrl, uploadedUrl }
@@ -111,6 +114,7 @@ export default function PostEditor({
             title: title.trim(),
             content,
             categoryId: categoryId ? parseInt(categoryId, 10) : null,
+            isPublic,
         };
 
         try {
@@ -146,7 +150,7 @@ export default function PostEditor({
                 {/* 제목 & 카테고리 */}
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 transition-shadow hover:shadow-md">
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 flex items-center">
                             <input
                                 type="text"
                                 value={title}
@@ -178,12 +182,43 @@ export default function PostEditor({
                                     </option>
                                 ))}
                             </select>
+
+                            {/* 공개 여부 */}
+                            <div className="mt-4 flex items-center gap-5 justify-end">
+                                <span className="text-sm font-semibold text-slate-700">
+                                    공개 설정
+                                </span>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="isPublic"
+                                        value="Y"
+                                        checked={isPublic === "Y"}
+                                        onChange={(e) => setIsPublic(e.target.value)}
+                                        className="accent-purple-600"
+                                    />
+                                    <span className="text-sm text-slate-700">공개</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="isPublic"
+                                        value="N"
+                                        checked={isPublic === "N"}
+                                        onChange={(e) => setIsPublic(e.target.value)}
+                                        className="accent-purple-600"
+                                    />
+                                    <span className="text-sm text-slate-700">비공개</span>
+                                </label>
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
                 {/* 에디터 */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-shadow hover:shadow-md">
+                <div
+                    className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-shadow hover:shadow-md">
                     <Editor
                         ref={editorRef}
                         language="ko-KR"

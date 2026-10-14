@@ -20,13 +20,14 @@ export default function PostEdit() {
                 title: data.title,
                 content: data.content,
                 categoryId: data.categoryId, // 없으면 data.category?.id 등으로 맞춤
+                isPublic: data.isPublic,
             });
         };
         load();
     }, [id]);
 
-    const handleUpdate = async ({ title, content, categoryId }) => {
-        const res = await post.updatePostInfo(id, { title, content, categoryId });
+    const handleUpdate = async ({ title, content, categoryId, isPublic }) => {
+        const res = await post.updatePostInfo(id, { title, content, categoryId, isPublic });
         return res.data?.data ?? res;
     };
 
